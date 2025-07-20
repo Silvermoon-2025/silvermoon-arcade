@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>银月的游戏咖厅</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+extend: {
+    colors: {
+        primary: '#165DFF',
+        secondary: '#FFD166',
+        neutral: '#F5F7FA',
+        board: '#E6C388',
+        black: '#000001',
+        white: '#FFFFFF',
+        nightBackground: '#121212',
+        nightBoard: '#332a1b',
+        nightText: '#e0e0e0',
+        nightBlock: '#364969' // 新增夜间模式块的颜色
+    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
+    
+    .board-grid {
+        background-image: linear-gradient(to right, theme('colors.black') 1px, transparent 1px),
+                          linear-gradient(to bottom, theme('colors.black') 1px, transparent 1px);
+    }
+    
+    /* 其他现有工具类... */
+}
+
+/* 暗色模式全局样式 */
+
+body.dark-mode {
+    background-color: theme('colors.nightBackground');
+    color: theme('colors.nightText');
+}
+
+/* 在暗色模式下，将特定的灰色文本也转为夜间文本颜色 */
+body.dark-mode .text-gray-600,
+body.dark-mode .text-gray-700,
+body.dark-mode .text-gray-800 {
+    color: theme('colors.nightText');
+}
+
+body.dark-mode .game-status-container,
+body.dark-mode .game-info-card {
+    background-color: theme('colors.nightBlock');
+    color: theme('colors.nightText');
+}
+
+body.dark-mode .btn-primary {
+    background-color: theme('colors.primary');
+    color: white;
+}
+
+body.dark-mode .btn-secondary {
+    background-color: theme('colors.secondary');
+    color: theme('colors.primary');
+}
+
+body.dark-mode header {
+    background-color: #165DFF; /* 维持颜色 */
+}
+
+body.dark-mode .text-black {
+    color: theme('colors.nightText');
+}
+
+</style>
+</head>
+<body class="bg-neutral min-h-screen font-sans text-black">
+    <!-- 顶部导航栏 -->
+    <header class="bg-primary text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- 添加跳转块 -->
+            <div class="flex items-center mb-4 md:mb-0">
+                <a href="https://silvermoon-2025.github.io/historyloverweb/" class="flex items-center hover:opacity-90 transition-opacity">
+                    <i class="fa fa-book text-2xl mr-2"></i>
+                    <span class="text-xl font-bold">历史爱好者服务专设网站</span>
+                </a>
+            </div>
+            <!-- 将网站标题名移动到右侧 -->
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-gamepad text-secondary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight">银月的游戏咖厅</h1>
+            </div>
+            <!-- 夜间模式切换按钮 -->
+<button id="theme-toggle" class="fixed bottom-6 right-6 w-32 h-14 rounded-full border-2 border-yellow-400 shadow-lg overflow-hidden transition-all duration-300 ease-in-out z-50 cursor-pointer hover:scale-105 active:scale-95">
+    <div class="relative w-full h-full overflow-hidden">
+        <!-- 白天模式背景 - 云彩 -->
+        <div id="day-bg" class="absolute inset-0 bg-blue-100 transition-opacity duration-500 ease-in-out">
+            <div class="absolute top-3 left-2 w-12 h-4 bg-white rounded-full"></div>
+            <div class="absolute top-5 left-7 w-10 h-4 bg-white rounded-full"></div>
+            <div class="absolute top-3 right-2 w-12 h-4 bg-white rounded-full"></div>
+            <div class="absolute top-5 right-7 w-10 h-4 bg-white rounded-full"></div>
+        </div>
+        
+        <!-- 夜晚模式背景 - 星星 -->
+        <div id="night-bg" class="absolute inset-0 bg-black opacity-0 transition-opacity duration-500 ease-in-out">
+            <!-- 星星只分布在左侧区域 -->
+            <div class="absolute top-3 left-3 w-1 h-1 bg-yellow-300 rounded-full animate-pulse"></div>
+            <div class="absolute top-6 left-8 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+            <div class="absolute top-4 left-12 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1s"></div>
+            <div class="absolute bottom-3 left-5 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1.5s"></div>
+            <div class="absolute bottom-5 left-10 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 2s"></div>
+        </div>
+        
+        <!-- 太阳/月亮组合 -->
+        <div id="toggle-icon" class="absolute top-1 w-12 h-12 rounded-full transition-transform duration-700 ease-in-out transform">
+            <!-- 太阳 -->
+            <div id="sun" class="absolute inset-0 w-full h-full bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50 transition-opacity duration-300 ease-in-out">
+                <!-- 太阳光芒 -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="absolute w-14 h-1.5 bg-yellow-400 rounded-full"></div>
+                    <div class="absolute w-1.5 h-14 bg-yellow-400 rounded-full"></div>
+                    <div class="absolute w-10 h-1.5 bg-yellow-400 rounded-full transform rotate-45"></div>
+                    <div class="absolute w-1.5 h-10 bg-yellow-400 rounded-full transform rotate-45"></div>
+                </div>
+            </div>
+            
+            <!-- 月亮 -->
+            <div id="moon" class="absolute inset-0 w-full h-full bg-gray-200 rounded-full shadow-lg opacity-0 transition-opacity duration-300 ease-in-out">
+                <!-- 月亮坑洼 -->
+                <div class="absolute top-2 left-2 w-2 h-2 bg-gray-300 rounded-full"></div>
+                <div class="absolute top-4 right-3 w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
+                <div class="absolute bottom-3 left-3 w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
+            </div>
+        </div>
+    </div>
+</button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- 开放时间区域 -->
+        <div class="text-center mb-8">
+            <p class="text-lg font-medium">开放时间</p>
+            <p class="text-xs text-gray-600">Open Time</p>
+            <p class="text-sm">2025年7月12日 - 2025年9月30日</p>
+        </div>
+
+        <!-- 游戏标题 -->
+        <div class="text-center mb-8">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">围棋 - 中国传统棋类游戏</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">围棋是一种策略性两人棋类游戏，使用格状棋盘及黑白二色棋子进行对弈。</p>
+        </div>
+
+        <!-- 游戏状态信息 -->
+        <div class="flex justify-between items-center mb-4 px-4 py-3 bg-white rounded-lg shadow-sm">
+            <div class="flex items-center">
+                <div id="player-indicator" class="w-6 h-6 rounded-full bg-black mr-3 animate-pulse"></div>
+                <span id="game-status" class="font-medium">当前回合: 玩家回合 (黑棋)</span>
+            </div>
+            <button id="restart-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center">
+                <i class="fa fa-refresh mr-2"></i> 重开一盘
+            </button>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
+            <!-- 棋盘 -->
+            <div class="relative bg-board rounded-lg shadow-xl overflow-hidden">
+                <div id="board" class="w-[90vmin] h-[90vmin] max-w-[600px] max-h-[600px] board-grid bg-board" style="background-size: calc(100% / 14) calc(100% / 14);">
+                    <!-- 棋子将通过JavaScript动态添加 -->
+                </div>
+                
+                <!-- 游戏结果遮罩 -->
+                <div id="result-overlay" class="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center hidden">
+                    <h3 id="result-text" class="text-4xl font-bold text-white mb-6"></h3>
+                    <button id="play-again-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-6 py-3 rounded-lg font-medium text-lg transition-all duration-200 transform hover:scale-105">
+                        再来一局
+                    </button>
+                </div>
+            </div>
+
+            <!-- 游戏信息和控制区 -->
+            <div class="w-full md:w-64 bg-white rounded-lg shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">游戏信息</h3>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">黑棋 (玩家)</span>
+                        <span id="black-score" class="font-medium">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">白棋 (AI)</span>
+                        <span id="white-score" class="font-medium">0</span>
+                    </div>
+                    <div class="mt-2 text-sm text-red-500">
+                        <span id="win-condition">目标: 吃掉对方16个棋子获胜</span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-medium mb-2">游戏规则</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• 黑方先行，双方交替落子</li>
+                        <li>• 棋子一旦落下，就不能移动或拿掉</li>
+                        <li>• 当一方的棋子被对方的棋子完全包围，没有气(周围空格)时，这些棋子会被提走</li>
+                        <li>• 单个棋子的四口气被对方棋子占据时，该棋子被提走</li>
+                        <li>• 如果多个同色棋子相连成一个整体，它们共享气数</li>
+                        <li>• 先吃掉对方16个棋子的一方获胜</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-6">
+                    <button id="undo-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-primary px-4 py-2 rounded-lg font-medium transition-all duration-200">
+    <i class="fa fa-undo mr-2"></i> 悔棋
+</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-primary text-white mt-12 py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-lg font-bold">银月的游戏咖厅</h3>
+                    <p class="text-sm text-white/80 mt-1">本网站仅供娱乐消遣而用</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm">
+                        [发布地] 中国-北京<br>
+                        [网站创建时间] 2025年7月5日<br>
+                        [网页名称] 银月的游戏咖厅<br>
+                        [主要内测者] 我不是徐某人（QQ）
+                    </p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/20 text-center text-sm text-white/70">
+                <p>© 2025 银月的游戏咖厅</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 游戏常量
+            const BOARD_SIZE = 15; // 15×15的棋盘
+            const CELL_SIZE = 100 / (BOARD_SIZE - 1); // 百分比单位
+            const WINNING_CAPTURES = 16; // 吃掉对方16个棋子获胜
+            
+            // 游戏状态
+            let gameBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
+            let currentPlayer = 'black'; // 黑棋先行
+            let gameActive = true;
+            let moveHistory = [];
+            let blackScore = 0;
+            let whiteScore = 0;
+            
+            // DOM元素
+            const boardElement = document.getElementById('board');
+            const gameStatusElement = document.getElementById('game-status');
+            const playerIndicatorElement = document.getElementById('player-indicator');
+            const restartButton = document.getElementById('restart-btn');
+            const playAgainButton = document.getElementById('play-again-btn');
+            const resultOverlayElement = document.getElementById('result-overlay');
+            const resultTextElement = document.getElementById('result-text');
+            const blackScoreElement = document.getElementById('black-score');
+            const whiteScoreElement = document.getElementById('white-score');
+            const undoButton = document.getElementById('undo-btn');
+            const winConditionElement = document.getElementById('win-condition');
+            const nightModeToggle = document.getElementById('night-mode-toggle');
+            let isNightMode = false;
+
+    // 检查DOM元素是否正确获取
+    console.log('boardElement:', boardElement);
+    console.log('gameStatusElement:', gameStatusElement);
+    console.log('playerIndicatorElement:', playerIndicatorElement);
+    console.log('Before initializeBoard');
+    initializeBoard();
+    console.log('After initializeBoard');
+    // 依次检查其他元素...
+
+            // 初始化棋盘
+            function initializeBoard() {
+                boardElement.innerHTML = '';
+                
+                // 创建交叉点
+                for (let y = 0; y < BOARD_SIZE; y++) {
+                    for (let x = 0; x < BOARD_SIZE; x++) {
+                        const intersection = document.createElement('div');
+                        intersection.className = 'absolute rounded-full cursor-pointer hover:bg-black/10 transition-colors duration-150';
+                        intersection.style.width = '7%';
+                        intersection.style.height = '7%';
+                        intersection.style.left = `${x * CELL_SIZE}%`;
+                        intersection.style.top = `${y * CELL_SIZE}%`;
+                        intersection.style.transform = 'translate(-50%, -50%)';
+                        intersection.dataset.x = x;
+                        intersection.dataset.y = y;
+                        
+                        // 添加点击事件
+                        intersection.addEventListener('click', () => handleIntersectionClick(x, y));
+                        
+                        boardElement.appendChild(intersection);
+                    }
+                }
+                
+                // 添加星位点
+                const starPoints = [
+                    {x: 3, y: 3}, {x: 3, y: 11}, {x: 7, y: 7},
+                    {x: 11, y: 3}, {x: 11, y: 11}
+                ];
+                
+                starPoints.forEach(point => {
+                    const starPoint = document.createElement('div');
+                    starPoint.className = 'absolute bg-black rounded-full';
+                    starPoint.style.width = '2.5%';
+                    starPoint.style.height = '2.5%';
+                    starPoint.style.left = `${point.x * CELL_SIZE}%`;
+                    starPoint.style.top = `${point.y * CELL_SIZE}%`;
+                    starPoint.style.transform = 'translate(-50%, -50%)';
+                    boardElement.appendChild(starPoint);
+                });
+            }
+            
+    // 调用初始化函数
+    initializeBoard();
+            
+            // 处理交叉点点击
+            function handleIntersectionClick(x, y) {
+                // 检查是否可以落子
+                if (!gameActive || gameBoard[y][x] !== null ||!isValidMove(x, y, currentPlayer)) {
+                    return;
+                }
+                
+                // 记录历史
+                moveHistory.push({x, y, player: currentPlayer});
+                
+                // 落子
+                placePiece(x, y, currentPlayer);
+                
+                // 检查提子
+                const capturedCount = capturePieces(x, y, currentPlayer === 'black' ? 'white' : 'black');
+                
+                // 检查是否达到获胜条件
+                if (currentPlayer === 'black' && blackScore >= WINNING_CAPTURES) {
+                    endGame('恭喜，你取得了胜利！');
+                    return;
+                }
+                
+                // 切换玩家
+                currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+                updateGameStatus();
+                
+                // 如果轮到AI，延迟后落子
+                if (currentPlayer === 'white' && gameActive) {
+                    gameStatusElement.textContent = 'AI正在思考...';
+                    playerIndicatorElement.classList.remove('bg-black', 'bg-white');
+                    playerIndicatorElement.classList.add('bg-gray-400');
+                    
+                    setTimeout(() => {
+                        makeAIMove();
+                    }, 800);
+                }
+            }
+            
+            // 检查落子是否合法
+            function isValidMove(x, y, color) {
+                // 临时落子
+                gameBoard[y][x] = color;
+                
+                // 检查自己的棋子是否有气
+                const hasLiberty = hasLiberties(x, y, color);
+                
+                // 检查是否能提掉对方的棋子
+                const opponentColor = color === 'black' ? 'white' : 'black';
+                const canCapture = canCaptureOpponent(x, y, opponentColor);
+                
+                // 恢复临时落子
+                gameBoard[y][x] = null;
+                
+                return hasLiberty || canCapture;
+            }
+            
+            // 检查棋子组是否有气
+            function hasLiberties(x, y, color) {
+                const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
+                let hasLiberty = false;
+                
+                function dfs(x, y) {
+                    if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
+                        visited[y][x] || gameBoard[y][x]!== color) {
+                        return;
+                    }
+                    
+                    visited[y][x] = true;
+                    
+                    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                    for (const [dx, dy] of directions) {
+                        const nx = x + dx;
+                        const ny = y + dy;
+                        
+                        if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
+                            if (gameBoard[ny][nx] === null) {
+                                hasLiberty = true;
+                            } else if (gameBoard[ny][nx] === color &&!visited[ny][nx]) {
+                                dfs(nx, ny);
+                            }
+                        }
+                    }
+                }
+                
+                dfs(x, y);
+                
+                return hasLiberty;
+            }
+            
+            // 检查是否能提掉对方的棋子
+            function canCaptureOpponent(x, y, opponentColor) {
+                const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                let canCapture = false;
+                
+                // 临时落子
+                gameBoard[y][x] = currentPlayer;
+                
+                // 检查周围的对方棋子组
+                for (const [dx, dy] of directions) {
+                    const newX = x + dx;
+                    const newY = y + dy;
+                    
+                    if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE && 
+                        gameBoard[newY][newX] === opponentColor) {
+                        
+                        const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
+                        let hasLiberty = false;
+                        
+                        function dfs(x, y) {
+                            if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
+                                visited[y][x] || gameBoard[y][x]!== opponentColor) {
+                                return;
+                            }
+                            
+                            visited[y][x] = true;
+                            
+                            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                            for (const [dx, dy] of directions) {
+                                const nx = x + dx;
+                                const ny = y + dy;
+                                
+                                if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
+                                    if (gameBoard[ny][nx] === null) {
+                                        hasLiberty = true;
+                                    } else if (gameBoard[ny][nx] === opponentColor &&!visited[ny][nx]) {
+                                        dfs(nx, ny);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        dfs(newX, newY);
+                        
+                        // 如果棋子组没有气，说明可以提子
+                        if (!hasLiberty) {
+                            canCapture = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // 恢复临时落子
+                gameBoard[y][x] = null;
+                
+                return canCapture;
+            }
+            
+            // 落子
+            function placePiece(x, y, color) {
+                // 更新游戏状态
+                gameBoard[y][x] = color;
+                
+                // 创建棋子元素
+                const piece = document.createElement('div');
+                piece.className = `absolute rounded-full piece-shadow animate-scale`;
+                piece.style.width = '6%';
+                piece.style.height = '6%';
+                piece.style.left = `${x * CELL_SIZE}%`;
+                piece.style.top = `${y * CELL_SIZE}%`;
+                piece.style.transform = 'translate(-50%, -50%)';
+                piece.style.backgroundColor = color === 'black' ? '#1E1E1E' : '#FFFFFF';
+                piece.style.border = color === 'white' ? '1px solid #ccc' : 'none';
+                piece.dataset.x = x;
+                piece.dataset.y = y;
+                piece.dataset.color = color;
+                
+                // 添加到棋盘
+                boardElement.appendChild(piece);
+                
+                // 更新分数
+                updateScore();
+            }
+            
+            // AI落子 - 增强版AI，具有基本围棋策略
+            function makeAIMove() {
+                if (!gameActive) return;
+                
+                // 检查是否有可以吃掉对方棋子的位置
+                const capturingMove = findCapturingMove();
+                if (capturingMove) {
+                    moveHistory.push({x: capturingMove.x, y: capturingMove.y, player: currentPlayer});
+                    placePiece(capturingMove.x, capturingMove.y, currentPlayer);
+                    const capturedCount = capturePieces(capturingMove.x, capturingMove.y, 'black');
+                    
+                    if (whiteScore >= WINNING_CAPTURES) {
+                        endGame('很遗憾，你输掉了这场对局。');
+                        return;
+                    }
+                    
+                    currentPlayer = 'black';
+                    updateGameStatus();
+                    return;
+                }
+                
+                // 检查自己是否有被攻击的棋子需要保护
+                const defensiveMove = findDefensiveMove();
+                if (defensiveMove) {
+                    moveHistory.push({x: defensiveMove.x, y: defensiveMove.y, player: currentPlayer});
+                    placePiece(defensiveMove.x, defensiveMove.y, currentPlayer);
+                    capturePieces(defensiveMove.x, defensiveMove.y, 'black');
+                    
+                    currentPlayer = 'black';
+                    updateGameStatus();
+                    return;
+                }
+                
+                // 尝试形成三连子或四子
+                const offensiveMove = findOffensiveMove();
+                if (offensiveMove) {
+                    moveHistory.push({x: offensiveMove.x, y: offensiveMove.y, player: currentPlayer});
+                    placePiece(offensiveMove.x, offensiveMove.y, currentPlayer);
+                    capturePieces(offensiveMove.x, offensiveMove.y, 'black');
+                    
+                    currentPlayer = 'black';
+                    updateGameStatus();
+                    return;
+                }
+                
+                // 如果没有明显的进攻或防守机会，选择一个随机的合法位置，但优先考虑中央区域
+                let validMoves = [];
+                const centerX = Math.floor(BOARD_SIZE / 2);
+                const centerY = Math.floor(BOARD_SIZE / 2);
+                
+                for (let y = 0; y < BOARD_SIZE; y++) {
+                    for (let x = 0; x < BOARD_SIZE; x++) {
+                        if (gameBoard[y][x] === null && isValidMove(x, y, currentPlayer)) {
+                            // 计算到中心的距离，越近权重越高
+                            const distanceToCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+                            const weight = 1 / (distanceToCenter + 1);
+                            
+                            // 优先考虑靠近已有棋子的位置
+                            let hasNeighbor = false;
+                            for (let dx = -1; dx <= 1; dx++) {
+                                for (let dy = -1; dy <= 1; dy++) {
+                                    if (dx === 0 && dy === 0) continue;
+                                    
+                                    const nx = x + dx;
+                                    const ny = y + dy;
+                                    
+                                    if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && 
+                                        gameBoard[ny][nx]!== null) {
+                                        hasNeighbor = true;
+                                        break;
+                                    }
+                                }
+                                if (hasNeighbor) break;
+                            }
+                            
+                            // 计算最终得分
+                            const score = weight * (hasNeighbor? 2 : 1);
+                            validMoves.push({x, y, score});
+                        }
+                    }
+                }
+                
+                // 如果没有合法移动，游戏结束
+                if (validMoves.length === 0) {
+                    endGame();
+                    return;
+                }
+                
+                // 按得分排序
+                validMoves.sort((a, b) => b.score - a.score);
+                
+                // 选择得分最高的几个位置中的随机一个
+                const topMoves = validMoves.slice(0, Math.min(5, validMoves.length));
+                const randomIndex = Math.floor(Math.random() * topMoves.length);
+                const move = topMoves[randomIndex];
+                
+                moveHistory.push({x: move.x, y: move.y, player: currentPlayer});
+                placePiece(move.x, move.y, currentPlayer);
+                capturePieces(move.x, move.y, 'black');
+                
+                currentPlayer = 'black';
+                updateGameStatus();
+                checkGameEnd();
+            }
+            
+            // 寻找可以吃掉对方棋子的位置
+            function findCapturingMove() {
+                for (let y = 0; y < BOARD_SIZE; y++) {
+                    for (let x = 0; x < BOARD_SIZE; x++) {
+                        if (gameBoard[y][x]!== null ||!isValidMove(x, y, 'white')) continue;
+                        
+                        // 临时落子，检查是否能吃掉对方棋子
+                        gameBoard[y][x] = 'white';
+                        
+                        let captured = false;
+                        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                        
+                        // 检查周围的对方棋子组
+                        for (const [dx, dy] of directions) {
+                            const newX = x + dx;
+                            const newY = y + dy;
+                            
+                            if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE && 
+                                gameBoard[newY][newX] === 'black') {
+                                
+                                const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
+                                let hasLiberty = false;
+                                
+                                function dfs(x, y) {
+                                    if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
+                                        visited[y][x] || gameBoard[y][x]!== 'black') {
+                                        return;
+                                    }
+                                    
+                                    visited[y][x] = true;
+                                    
+                                    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                                    for (const [dx, dy] of directions) {
+                                        const nx = x + dx;
+                                        const ny = y + dy;
+                                        
+                                        if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
+                                            if (gameBoard[ny][nx] === null) {
+                                                hasLiberty = true;
+                                            } else if (gameBoard[ny][nx] === 'black' &&!visited[ny][nx]) {
+                                                dfs(nx, ny);
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                dfs(newX, newY);
+                                
+                                // 如果棋子组没有气，说明可以提子
+                                if (!hasLiberty) {
+                                    captured = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // 恢复临时落子
+                        gameBoard[y][x] = null;
+                        
+                        if (captured) {
+                            return {x, y};
+                        }
+                    }
+                }
+                
+                return null;
+            }
+            
+            // 寻找需要保护的位置
+            function findDefensiveMove() {
+                // 简单实现：暂时返回 null
+                return null;
+            }
+            
+            // 寻找可以形成三连子或四子的位置
+            function findOffensiveMove() {
+                // 简单实现：暂时返回 null
+                return null;
+            }
+            
+            // 提子
+            function capturePieces(x, y, opponentColor) {
+                const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                let capturedCount = 0;
+                const currentPlayerColor = opponentColor === 'black'? 'white' : 'black';
+                
+                // 临时落子
+                gameBoard[y][x] = currentPlayerColor;
+                
+                // 检查周围的对方棋子组
+                for (const [dx, dy] of directions) {
+                    const newX = x + dx;
+                    const newY = y + dy;
+                    
+                    if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE && 
+                        gameBoard[newY][newX] === opponentColor) {
+                        
+                        const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
+                        const group = [];
+                        let hasLiberty = false;
+                        
+                        function dfs(x, y) {
+                            if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
+                                visited[y][x] || gameBoard[y][x]!== opponentColor) {
+                                return;
+                            }
+                            
+                            visited[y][x] = true;
+                            group.push({x, y});
+                            
+                            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                            for (const [dx, dy] of directions) {
+                                const nx = x + dx;
+                                const ny = y + dy;
+                                
+                                if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
+                                    if (gameBoard[ny][nx] === null) {
+                                        hasLiberty = true;
+                                    } else if (gameBoard[ny][nx] === opponentColor &&!visited[ny][nx]) {
+                                        dfs(nx, ny);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        dfs(newX, newY);
+                        
+                        // 如果棋子组没有气，移除这些棋子
+                        if (!hasLiberty) {
+                            capturedCount += group.length;
+                            for (const {x, y} of group) {
+                                gameBoard[y][x] = null;
+                                
+                                // 移除DOM元素
+                                const piece = boardElement.querySelector(`[data-x="${x}"][data-y="${y}"][data-color="${opponentColor}"]`);
+                                if (piece) {
+                                    piece.classList.add('animate-fade-out');
+                                    setTimeout(() => {
+                                        if (piece.parentNode) {
+                                            piece.parentNode.removeChild(piece);
+                                        }
+                                    }, 300);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // 恢复临时落子
+                gameBoard[y][x] = currentPlayerColor;
+                
+                // 更新分数
+                if (opponentColor === 'black') {
+                    whiteScore += capturedCount;
+                } else {
+                    blackScore += capturedCount;
+                }
+                
+                updateScore();
+                
+                return capturedCount;
+            }
+            
+            // 更新游戏状态显示
+            function updateGameStatus() {
+                gameStatusElement.textContent = currentPlayer === 'black'? '当前回合: 玩家回合 (黑棋)' : '当前回合: AI回合 (白棋)';
+                playerIndicatorElement.className = 'w-6 h-6 rounded-full mr-3 animate-pulse';
+                playerIndicatorElement.classList.add(currentPlayer === 'black'? 'bg-black' : 'bg-white');
+            }
+            
+            // 更新分数显示
+            function updateScore() {
+                blackScoreElement.textContent = blackScore;
+                whiteScoreElement.textContent = whiteScore;
+                
+                // 更新获胜条件显示
+                winConditionElement.textContent = `目标: 吃掉对方${WINNING_CAPTURES}个棋子获胜 (当前: ${currentPlayer === 'black'? '黑' : '白'}方需要${WINNING_CAPTURES - (currentPlayer === 'black'? blackScore : whiteScore)}个)`;
+            }
+            
+            // 检查游戏是否结束
+            function checkGameEnd() {
+                // 检查是否达到获胜条件
+                if (blackScore >= WINNING_CAPTURES) {
+                    endGame('恭喜，你取得了胜利！');
+                    return;
+                }
+                
+                if (whiteScore >= WINNING_CAPTURES) {
+                    endGame('很遗憾，你输掉了这场对局。');
+                    return;
+                }
+                
+                // 简单实现：如果棋盘已满，游戏结束
+                let emptySpaces = 0;
+                for (let y = 0; y < BOARD_SIZE; y++) {
+                    for (let x = 0; x < BOARD_SIZE; x++) {
+                        if (gameBoard[y][x] === null) {
+                            emptySpaces++;
+                        }
+                    }
+                }
+                
+                if (emptySpaces === 0) {
+                    endGame();
+                }
+            }
+            
+            // 游戏结束
+            function endGame(message) {
+                gameActive = false;
+                
+                if (!message) {
+                    // 计算最终得分
+                    let blackTerritory = 0;
+                    let whiteTerritory = 0;
+                    
+                    for (let y = 0; y < BOARD_SIZE; y++) {
+                        for (let x = 0; x < BOARD_SIZE; x++) {
+                            if (gameBoard[y][x] === 'black') {
+                                blackTerritory++;
+                            } else if (gameBoard[y][x] === 'white') {
+                                whiteTerritory++;
+                            }
+                        }
+                    }
+                    
+                    if (blackTerritory + blackScore > whiteTerritory + whiteScore) {
+                        message = '恭喜，你取得了胜利！';
+                    } else if (blackTerritory + blackScore < whiteTerritory + whiteScore) {
+                        message = '很遗憾，你输掉了这场对局。';
+                    } else {
+                        message = '本局游戏平局！';
+                    }
+                }
+                
+                // 显示结果
+                resultTextElement.textContent = message;
+                resultOverlayElement.classList.remove('hidden');
+            }
+            
+            // 重置游戏
+            function resetGame() {
+                gameBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
+                currentPlayer = 'black';
+                gameActive = true;
+                moveHistory = [];
+                blackScore = 0;
+                whiteScore = 0;
+                
+                initializeBoard();
+                updateGameStatus();
+                updateScore();
+                
+                resultOverlayElement.classList.add('hidden');
+            }
+            
+            // 悔棋
+            function undoMove() {
+                if (moveHistory.length === 0 ||!gameActive) return;
+                
+                // 撤销最近两步（玩家和AI的移动）
+                for (let i = 0; i < 2 && moveHistory.length > 0; i++) {
+                    const lastMove = moveHistory.pop();
+                    gameBoard[lastMove.y][lastMove.x] = null;
+                    
+                    // 移除DOM元素
+                    const piece = boardElement.querySelector(`[data-x="${lastMove.x}"][data-y="${lastMove.y}"][data-color="${lastMove.player}"]`);
+                    if (piece) {
+                        piece.classList.add('animate-fade-out');
+                        setTimeout(() => {
+                            if (piece.parentNode) {
+                                piece.parentNode.removeChild(piece);
+                            }
+                        }, 300);
+                    }
+                }
+                
+                // 回到玩家回合
+                currentPlayer = 'black';
+                updateGameStatus();
+                updateScore();
+            }
+
+// 切换夜间模式
+// 在DOMContentLoaded事件处理函数内部添加
+const themeToggle = document.getElementById('theme-toggle');
+const toggleIcon = document.getElementById('toggle-icon');
+const sun = document.getElementById('sun');
+const moon = document.getElementById('moon');
+const dayBg = document.getElementById('day-bg');
+const nightBg = document.getElementById('night-bg');
+const body = document.body;
+
+// 计算按钮位置的辅助函数
+const calculateTranslateX = () => {
+    const buttonWidth = themeToggle.offsetWidth;
+    const iconWidth = toggleIcon.offsetWidth;
+    const borderWidth = 2;
+    return buttonWidth - iconWidth - (borderWidth * 2);
+};
+
+// 应用深色模式
+function applyDarkMode() {
+    body.classList.add('dark-mode');
+    const translateX = calculateTranslateX() - 2;
+    toggleIcon.style.transform = `translateX(${translateX}px)`;
+    setTimeout(() => {
+        sun.style.opacity = '0';
+        moon.style.opacity = '1';
+    }, 300);
+    dayBg.style.opacity = '0';
+    nightBg.style.opacity = '1';
+    
+    // 只切换白色背景元素到夜间模式颜色
+    document.querySelectorAll('.bg-white').forEach(el => {
+        el.classList.remove('bg-white');
+        el.classList.add('bg-nightBlock');
+    });
+}
+
+// 应用浅色模式
+function applyLightMode() {
+    body.classList.remove('dark-mode');
+    sun.style.opacity = '1';
+    moon.style.opacity = '0';
+    setTimeout(() => {
+        toggleIcon.style.transform = 'translateX(0)';
+    }, 100);
+    dayBg.style.opacity = '1';
+    nightBg.style.opacity = '0';
+    
+    // 恢复白色背景元素
+    document.querySelectorAll('.bg-nightBlock').forEach(el => {
+        el.classList.remove('bg-nightBlock');
+        el.classList.add('bg-white');
+    });
+}
+
+// 按钮点击事件
+themeToggle.addEventListener('click', () => {
+    if (body.classList.contains('dark-mode')) {
+        applyLightMode();
+        localStorage.setItem('darkMode', 'false');
+    } else {
+        applyDarkMode();
+        localStorage.setItem('darkMode', 'true');
+    }
+});
+
+// 检查本地存储中的主题偏好
+const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+// 初始化主题
+if (isDarkMode) {
+    applyDarkMode();
+} else {
+    toggleIcon.style.left = '2px';
+}
+
+            // 事件监听
+            restartButton.addEventListener('click', resetGame);
+            playAgainButton.addEventListener('click', resetGame);
+            undoButton.addEventListener('click', undoMove);
+            nightModeToggle.addEventListener('click', toggleNightMode);
+            
+            // 初始化游戏
+            initializeBoard();
+            updateGameStatus();
+        });
+    </script>
+</body>
+
+</html>
