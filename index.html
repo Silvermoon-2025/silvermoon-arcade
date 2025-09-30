@@ -34,12 +34,114 @@ extend: {
         content-visibility: auto;
     }
     
-    .board-grid {
-        background-image: linear-gradient(to right, theme('colors.black') 1px, transparent 1px),
-                          linear-gradient(to bottom, theme('colors.black') 1px, transparent 1px);
+    .flagpole {
+        background-color: #8B4513;
+        width: 4px;
+        height: 100%;
+        margin: 0 auto;
     }
     
-    /* 其他现有工具类... */
+    .flag {
+        position: absolute;
+        width: 120px;
+        height: 80px;
+        transition: top 0.5s ease;
+        transform-origin: left top;
+    }
+    
+    .circle-outer {
+        width: 120px;
+        height: 120px;
+        border: 8px solid #ccc;
+        border-radius: 50%;
+        position: relative;
+        margin: 20px auto;
+    }
+    
+    .circle-inner {
+        width: 40px;
+        height: 40px;
+        background-color: #165DFF;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        touch-action: none;
+    }
+    
+    .platform {
+        width: 200px;
+        height: 10px;
+        background-color: #666;
+        margin: 0 auto;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .升旗-container {
+        height: 400px;
+        position: relative;
+        margin: 20px 0;
+    }
+    
+    .flagpole {
+        width: 4px;
+        height: 100%;
+        background-color: #666;
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+    }
+    
+    .flag {
+        position: absolute;
+        width: 120px;
+        height: 80px;
+        left: calc(50% + 2px);
+        transform-origin: left top;
+    }
+    
+    .circle-inner {
+        width: 40px;
+        height: 40px;
+        background-color: #165DFF;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        touch-action: none;
+    }
+    
+    .result-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+    
+    .result-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
 }
 
 /* 暗色模式全局样式 */
@@ -155,7 +257,7 @@ body.dark-mode .text-black {
         <div class="text-center mb-8">
             <p class="text-lg font-medium">开放时间</p>
             <p class="text-xs text-gray-600">Open Time</p>
-            <p class="text-sm">2025年7月12日 - 2025年9月30日</p>
+            <p class="text-sm">2025年10月1日 - 2025年10月2日</p>
         </div>
 
         <!-- 站嵌音乐信息块 -->
@@ -179,15 +281,15 @@ body.dark-mode .text-black {
     <div class="grid grid-cols-1 gap-3 text-sm">
       <div class="flex items-center">
         <span class="w-28 text-gray-500 dark:text-gray-400">绑定时间：</span>
-        <span class="text-gray-800 dark:text-gray-200 font-medium">2025年7月26日</span>
+        <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月1日</span>
       </div>
       <div class="flex items-center">
         <span class="w-28 text-gray-500 dark:text-gray-400">绑定音乐：</span>
-        <span class="text-gray-800 dark:text-gray-200 font-medium">花翎旗装 - 栾凯</span>
+        <span class="text-gray-800 dark:text-gray-200 font-medium">义勇军进行曲 - 中国人民解放军军乐团,陈燮阳,上海交响乐团</span>
       </div>
       <div class="flex items-center">
         <span class="w-28 text-gray-500 dark:text-gray-400">续播时间：</span>
-        <span class="text-gray-800 dark:text-gray-200 font-medium">2025年7月26日~2025年9月30日</span>
+        <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月1日~2025年10月2日</span>
       </div>
     </div>
   </div>
@@ -198,35 +300,44 @@ body.dark-mode .text-black {
 
         <!-- 游戏标题 -->
         <div class="text-center mb-8">
-            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">围棋 - 中国传统棋类游戏</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">围棋是一种策略性两人棋类游戏，使用格状棋盘及黑白二色棋子进行对弈。</p>
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">升旗挑战 - 模拟升旗游戏</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">长按并顺时针摇动圆圈来升起国旗，松开则国旗会缓缓下降。将国旗升到顶端完成挑战！</p>
         </div>
 
         <!-- 游戏状态信息 -->
         <div class="flex justify-between items-center mb-4 px-4 py-3 bg-white rounded-lg shadow-sm">
             <div class="flex items-center">
-                <div id="player-indicator" class="w-6 h-6 rounded-full bg-black mr-3 animate-pulse"></div>
-                <span id="game-status" class="font-medium">当前回合: 玩家回合 (黑棋)</span>
+                <div class="w-6 h-6 rounded-full bg-red-600 mr-3"></div>
+                <span id="game-status" class="font-medium">当前状态: 准备就绪</span>
             </div>
             <button id="restart-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center">
-                <i class="fa fa-refresh mr-2"></i> 重开一盘
+                <i class="fa fa-refresh mr-2"></i> 重新开始
             </button>
         </div>
 
         <!-- 游戏区域 -->
         <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
-            <!-- 棋盘 -->
-            <div class="relative bg-board rounded-lg shadow-xl overflow-hidden">
-                <div id="board" class="w-[90vmin] h-[90vmin] max-w-[600px] max-h-[600px] board-grid bg-board" style="background-size: calc(100% / 14) calc(100% / 14);">
-                    <!-- 棋子将通过JavaScript动态添加 -->
+            <!-- 升旗区域 -->
+            <div class="relative bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+                <!-- 旗台 -->
+                <div class="platform"></div>
+                
+                <!-- 旗杆和旗帜容器 -->
+                <div class="升旗-container">
+                    <div class="flagpole"></div>
+                    <div id="flag" class="flag" style="top: 320px; left: calc(50% + 2px);">
+                        <img src="the National Flag of the PRC.png alt"="五星红旗" class="w-full h-full object-cover">
+                    </div>
                 </div>
                 
-                <!-- 游戏结果遮罩 -->
-                <div id="result-overlay" class="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center hidden">
-                    <h3 id="result-text" class="text-4xl font-bold text-white mb-6"></h3>
-                    <button id="play-again-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-6 py-3 rounded-lg font-medium text-lg transition-all duration-200 transform hover:scale-105">
-                        再来一局
-                    </button>
+                <!-- 摇动控制区 -->
+                <div class="mt-6">
+                    <div class="circle-outer">
+                        <div id="circle-inner" class="circle-inner"></div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p class="text-gray-600">摇动次数: <span id="shake-count" class="font-medium">0</span></p>
+                    </div>
                 </div>
             </div>
 
@@ -235,37 +346,35 @@ body.dark-mode .text-black {
                 <h3 class="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">游戏信息</h3>
                 
                 <div class="mb-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-600">黑棋 (玩家)</span>
-                        <span id="black-score" class="font-medium">0</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">白棋 (AI)</span>
-                        <span id="white-score" class="font-medium">0</span>
-                    </div>
-                    <div class="mt-2 text-sm text-red-500">
-                        <span id="win-condition">目标: 吃掉对方16个棋子获胜</span>
-                    </div>
-                </div>
-                
-                <div class="mb-4">
                     <h4 class="font-medium mb-2">游戏规则</h4>
                     <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• 黑方先行，双方交替落子</li>
-                        <li>• 棋子一旦落下，就不能移动或拿掉</li>
-                        <li>• 当一方的棋子被对方的棋子完全包围，没有气(周围空格)时，这些棋子会被提走</li>
-                        <li>• 单个棋子的四口气被对方棋子占据时，该棋子被提走</li>
-                        <li>• 如果多个同色棋子相连成一个整体，它们共享气数</li>
-                        <li>• 先吃掉对方16个棋子的一方获胜</li>
+                        <li>• 长按中央小圆圈并顺时针摇动</li>
+                        <li>• 每次有效摇动会使国旗上升</li>
+                        <li>• 松开手指，国旗会缓缓下降</li>
+                        <li>• 将国旗升到旗杆顶端即完成挑战</li>
+                        <li>• 尽量用最少的摇动次数完成</li>
+                    </ul>
+                    <h4 class="font-medium mb-2">最佳标准</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• 国歌结束的时候刚好完成升旗</li>
                     </ul>
                 </div>
                 
                 <div class="mt-6">
-                    <button id="undo-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-primary px-4 py-2 rounded-lg font-medium transition-all duration-200">
-    <i class="fa fa-undo mr-2"></i> 悔棋
-</button>
+                    <button id="help-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-primary px-4 py-2 rounded-lg font-medium transition-all duration-200">
+                        <i class="fa fa-question-circle mr-2"></i> 游戏帮助
+                    </button>
                 </div>
             </div>
+        </div>
+        
+        <!-- 游戏结果遮罩 -->
+        <div id="result-overlay" class="result-overlay">
+            <h3 class="text-4xl font-bold text-white mb-6">恭喜，您已完成升旗挑战！</h3>
+            <p class="text-xl text-white mb-6">总摇动次数: <span id="total-shakes" class="font-medium">0</span></p>
+            <button id="play-again-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-6 py-3 rounded-lg font-medium text-lg transition-all duration-200 transform hover:scale-105">
+                再来一次
+            </button>
         </div>
     </main>
 
@@ -294,734 +403,282 @@ body.dark-mode .text-black {
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 游戏常量
-            const BOARD_SIZE = 15; // 15×15的棋盘
-            const CELL_SIZE = 100 / (BOARD_SIZE - 1); // 百分比单位
-            const WINNING_CAPTURES = 16; // 吃掉对方16个棋子获胜
-            
-            // 游戏状态
-            let gameBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
-            let currentPlayer = 'black'; // 黑棋先行
-            let gameActive = true;
-            let moveHistory = [];
-            let blackScore = 0;
-            let whiteScore = 0;
-            
-            // DOM元素
-            const boardElement = document.getElementById('board');
+            // 获取DOM元素
+            const circleInner = document.getElementById('circle-inner');
+            const flag = document.getElementById('flag');
+            const shakeCountElement = document.getElementById('shake-count');
             const gameStatusElement = document.getElementById('game-status');
-            const playerIndicatorElement = document.getElementById('player-indicator');
             const restartButton = document.getElementById('restart-btn');
             const playAgainButton = document.getElementById('play-again-btn');
-            const resultOverlayElement = document.getElementById('result-overlay');
-            const resultTextElement = document.getElementById('result-text');
-            const blackScoreElement = document.getElementById('black-score');
-            const whiteScoreElement = document.getElementById('white-score');
-            const undoButton = document.getElementById('undo-btn');
-            const winConditionElement = document.getElementById('win-condition');
-            const nightModeToggle = document.getElementById('night-mode-toggle');
-            let isNightMode = false;
-
-    // 检查DOM元素是否正确获取
-    console.log('boardElement:', boardElement);
-    console.log('gameStatusElement:', gameStatusElement);
-    console.log('playerIndicatorElement:', playerIndicatorElement);
-    console.log('Before initializeBoard');
-    initializeBoard();
-    console.log('After initializeBoard');
-    // 依次检查其他元素...
-
-            // 初始化棋盘
-            function initializeBoard() {
-                boardElement.innerHTML = '';
-                
-                // 创建交叉点
-                for (let y = 0; y < BOARD_SIZE; y++) {
-                    for (let x = 0; x < BOARD_SIZE; x++) {
-                        const intersection = document.createElement('div');
-                        intersection.className = 'absolute rounded-full cursor-pointer hover:bg-black/10 transition-colors duration-150';
-                        intersection.style.width = '7%';
-                        intersection.style.height = '7%';
-                        intersection.style.left = `${x * CELL_SIZE}%`;
-                        intersection.style.top = `${y * CELL_SIZE}%`;
-                        intersection.style.transform = 'translate(-50%, -50%)';
-                        intersection.dataset.x = x;
-                        intersection.dataset.y = y;
-                        
-                        // 添加点击事件
-                        intersection.addEventListener('click', () => handleIntersectionClick(x, y));
-                        
-                        boardElement.appendChild(intersection);
-                    }
-                }
-                
-                // 添加星位点
-                const starPoints = [
-                    {x: 3, y: 3}, {x: 3, y: 11}, {x: 7, y: 7},
-                    {x: 11, y: 3}, {x: 11, y: 11}
-                ];
-                
-                starPoints.forEach(point => {
-                    const starPoint = document.createElement('div');
-                    starPoint.className = 'absolute bg-black rounded-full';
-                    starPoint.style.width = '2.5%';
-                    starPoint.style.height = '2.5%';
-                    starPoint.style.left = `${point.x * CELL_SIZE}%`;
-                    starPoint.style.top = `${point.y * CELL_SIZE}%`;
-                    starPoint.style.transform = 'translate(-50%, -50%)';
-                    boardElement.appendChild(starPoint);
-                });
+            const resultOverlay = document.getElementById('result-overlay');
+            const totalShakesElement = document.getElementById('total-shakes');
+            const helpButton = document.getElementById('help-btn');
+            
+            // 游戏状态
+            let isDragging = false;
+            let startAngle = 0;
+            let currentAngle = 0;
+            let shakeCount = 0;
+            let flagPosition = 320; // 旗帜初始位置（底部）
+            let isRising = false;
+            let isFalling = false;
+            let gameActive = true;
+            
+            // 圆圈中心点
+            const circleCenter = {
+                x: 60, // 外圆半径
+                y: 60
+            };
+            
+            // 国旗上升和下降的速度
+            const RISE_SPEED = 0.12; // 调整为42秒到达顶部
+            const FALL_SPEED = 0.3;
+            
+            // 计算两点之间的角度
+            function getAngle(x1, y1, x2, y2) {
+                return Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
             }
             
-    // 调用初始化函数
-    initializeBoard();
-            
-            // 处理交叉点点击
-            function handleIntersectionClick(x, y) {
-                // 检查是否可以落子
-                if (!gameActive || gameBoard[y][x] !== null ||!isValidMove(x, y, currentPlayer)) {
+            // 更新旗帜位置
+            let updateLoopRunning = false;
+            function updateFlagPosition() {
+                updateLoopRunning = true;
+                if (!gameActive) {
+                    updateLoopRunning = false;
                     return;
                 }
                 
-                // 记录历史
-                moveHistory.push({x, y, player: currentPlayer});
-                
-                // 落子
-                placePiece(x, y, currentPlayer);
-                
-                // 检查提子
-                const capturedCount = capturePieces(x, y, currentPlayer === 'black' ? 'white' : 'black');
-                
-                // 检查是否达到获胜条件
-                if (currentPlayer === 'black' && blackScore >= WINNING_CAPTURES) {
-                    endGame('恭喜，你取得了胜利！');
-                    return;
-                }
-                
-                // 切换玩家
-                currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
-                updateGameStatus();
-                
-                // 如果轮到AI，延迟后落子
-                if (currentPlayer === 'white' && gameActive) {
-                    gameStatusElement.textContent = 'AI正在思考...';
-                    playerIndicatorElement.classList.remove('bg-black', 'bg-white');
-                    playerIndicatorElement.classList.add('bg-gray-400');
+                if (isRising) {
+                    flagPosition = Math.max(0, flagPosition - RISE_SPEED);
+                    flag.style.top = `${flagPosition}px`;
                     
-                    setTimeout(() => {
-                        makeAIMove();
-                    }, 800);
-                }
-            }
-            
-            // 检查落子是否合法
-            function isValidMove(x, y, color) {
-                // 临时落子
-                gameBoard[y][x] = color;
-                
-                // 检查自己的棋子是否有气
-                const hasLiberty = hasLiberties(x, y, color);
-                
-                // 检查是否能提掉对方的棋子
-                const opponentColor = color === 'black' ? 'white' : 'black';
-                const canCapture = canCaptureOpponent(x, y, opponentColor);
-                
-                // 恢复临时落子
-                gameBoard[y][x] = null;
-                
-                return hasLiberty || canCapture;
-            }
-            
-            // 检查棋子组是否有气
-            function hasLiberties(x, y, color) {
-                const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
-                let hasLiberty = false;
-                
-                function dfs(x, y) {
-                    if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
-                        visited[y][x] || gameBoard[y][x]!== color) {
+                    // 检查是否到达顶部
+                    if (flagPosition <= 0) {
+                        gameActive = false;
+                        updateLoopRunning = false;
+                        endGame();
                         return;
                     }
-                    
-                    visited[y][x] = true;
-                    
-                    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-                    for (const [dx, dy] of directions) {
-                        const nx = x + dx;
-                        const ny = y + dy;
-                        
-                        if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
-                            if (gameBoard[ny][nx] === null) {
-                                hasLiberty = true;
-                            } else if (gameBoard[ny][nx] === color &&!visited[ny][nx]) {
-                                dfs(nx, ny);
-                            }
-                        }
-                    }
+                } else if (isFalling) {
+                    flagPosition = Math.min(320, flagPosition + FALL_SPEED);
+                    flag.style.top = `${flagPosition}px`;
                 }
                 
-                dfs(x, y);
-                
-                return hasLiberty;
+                requestAnimationFrame(updateFlagPosition);
             }
             
-            // 检查是否能提掉对方的棋子
-            function canCaptureOpponent(x, y, opponentColor) {
-                const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-                let canCapture = false;
-                
-                // 临时落子
-                gameBoard[y][x] = currentPlayer;
-                
-                // 检查周围的对方棋子组
-                for (const [dx, dy] of directions) {
-                    const newX = x + dx;
-                    const newY = y + dy;
-                    
-                    if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE && 
-                        gameBoard[newY][newX] === opponentColor) {
-                        
-                        const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
-                        let hasLiberty = false;
-                        
-                        function dfs(x, y) {
-                            if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
-                                visited[y][x] || gameBoard[y][x]!== opponentColor) {
-                                return;
-                            }
-                            
-                            visited[y][x] = true;
-                            
-                            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-                            for (const [dx, dy] of directions) {
-                                const nx = x + dx;
-                                const ny = y + dy;
-                                
-                                if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
-                                    if (gameBoard[ny][nx] === null) {
-                                        hasLiberty = true;
-                                    } else if (gameBoard[ny][nx] === opponentColor &&!visited[ny][nx]) {
-                                        dfs(nx, ny);
-                                    }
-                                }
-                            }
-                        }
-                        
-                        dfs(newX, newY);
-                        
-                        // 如果棋子组没有气，说明可以提子
-                        if (!hasLiberty) {
-                            canCapture = true;
-                            break;
-                        }
-                    }
-                }
-                
-                // 恢复临时落子
-                gameBoard[y][x] = null;
-                
-                return canCapture;
-            }
+            // 开始更新旗帜位置
+            updateFlagPosition();
             
-            // 落子
-            function placePiece(x, y, color) {
-                // 更新游戏状态
-                gameBoard[y][x] = color;
-                
-                // 创建棋子元素
-                const piece = document.createElement('div');
-                piece.className = `absolute rounded-full piece-shadow animate-scale`;
-                piece.style.width = '6%';
-                piece.style.height = '6%';
-                piece.style.left = `${x * CELL_SIZE}%`;
-                piece.style.top = `${y * CELL_SIZE}%`;
-                piece.style.transform = 'translate(-50%, -50%)';
-                piece.style.backgroundColor = color === 'black' ? '#1E1E1E' : '#FFFFFF';
-                piece.style.border = color === 'white' ? '1px solid #ccc' : 'none';
-                piece.dataset.x = x;
-                piece.dataset.y = y;
-                piece.dataset.color = color;
-                
-                // 添加到棋盘
-                boardElement.appendChild(piece);
-                
-                // 更新分数
-                updateScore();
-            }
-            
-            // AI落子 - 增强版AI，具有基本围棋策略
-            function makeAIMove() {
+            // 处理开始拖动
+            function startDrag(e) {
                 if (!gameActive) return;
                 
-                // 检查是否有可以吃掉对方棋子的位置
-                const capturingMove = findCapturingMove();
-                if (capturingMove) {
-                    moveHistory.push({x: capturingMove.x, y: capturingMove.y, player: currentPlayer});
-                    placePiece(capturingMove.x, capturingMove.y, currentPlayer);
-                    const capturedCount = capturePieces(capturingMove.x, capturingMove.y, 'black');
-                    
-                    if (whiteScore >= WINNING_CAPTURES) {
-                        endGame('很遗憾，你输掉了这场对局。');
-                        return;
-                    }
-                    
-                    currentPlayer = 'black';
-                    updateGameStatus();
-                    return;
-                }
+                isDragging = true;
+                isRising = true;
+                isFalling = false;
+                gameStatusElement.textContent = '当前状态: 升旗中...';
                 
-                // 检查自己是否有被攻击的棋子需要保护
-                const defensiveMove = findDefensiveMove();
-                if (defensiveMove) {
-                    moveHistory.push({x: defensiveMove.x, y: defensiveMove.y, player: currentPlayer});
-                    placePiece(defensiveMove.x, defensiveMove.y, currentPlayer);
-                    capturePieces(defensiveMove.x, defensiveMove.y, 'black');
-                    
-                    currentPlayer = 'black';
-                    updateGameStatus();
-                    return;
-                }
+                // 获取触摸/鼠标位置
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
                 
-                // 尝试形成三连子或四子
-                const offensiveMove = findOffensiveMove();
-                if (offensiveMove) {
-                    moveHistory.push({x: offensiveMove.x, y: offensiveMove.y, player: currentPlayer});
-                    placePiece(offensiveMove.x, offensiveMove.y, currentPlayer);
-                    capturePieces(offensiveMove.x, offensiveMove.y, 'black');
-                    
-                    currentPlayer = 'black';
-                    updateGameStatus();
-                    return;
-                }
+                // 获取元素位置
+                const rect = circleInner.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
                 
-                // 如果没有明显的进攻或防守机会，选择一个随机的合法位置，但优先考虑中央区域
-                let validMoves = [];
-                const centerX = Math.floor(BOARD_SIZE / 2);
-                const centerY = Math.floor(BOARD_SIZE / 2);
-                
-                for (let y = 0; y < BOARD_SIZE; y++) {
-                    for (let x = 0; x < BOARD_SIZE; x++) {
-                        if (gameBoard[y][x] === null && isValidMove(x, y, currentPlayer)) {
-                            // 计算到中心的距离，越近权重越高
-                            const distanceToCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-                            const weight = 1 / (distanceToCenter + 1);
-                            
-                            // 优先考虑靠近已有棋子的位置
-                            let hasNeighbor = false;
-                            for (let dx = -1; dx <= 1; dx++) {
-                                for (let dy = -1; dy <= 1; dy++) {
-                                    if (dx === 0 && dy === 0) continue;
-                                    
-                                    const nx = x + dx;
-                                    const ny = y + dy;
-                                    
-                                    if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && 
-                                        gameBoard[ny][nx]!== null) {
-                                        hasNeighbor = true;
-                                        break;
-                                    }
-                                }
-                                if (hasNeighbor) break;
-                            }
-                            
-                            // 计算最终得分
-                            const score = weight * (hasNeighbor? 2 : 1);
-                            validMoves.push({x, y, score});
-                        }
-                    }
-                }
-                
-                // 如果没有合法移动，游戏结束
-                if (validMoves.length === 0) {
-                    endGame();
-                    return;
-                }
-                
-                // 按得分排序
-                validMoves.sort((a, b) => b.score - a.score);
-                
-                // 选择得分最高的几个位置中的随机一个
-                const topMoves = validMoves.slice(0, Math.min(5, validMoves.length));
-                const randomIndex = Math.floor(Math.random() * topMoves.length);
-                const move = topMoves[randomIndex];
-                
-                moveHistory.push({x: move.x, y: move.y, player: currentPlayer});
-                placePiece(move.x, move.y, currentPlayer);
-                capturePieces(move.x, move.y, 'black');
-                
-                currentPlayer = 'black';
-                updateGameStatus();
-                checkGameEnd();
+                // 计算初始角度
+                startAngle = getAngle(centerX, centerY, clientX, clientY);
+                currentAngle = startAngle;
             }
             
-            // 寻找可以吃掉对方棋子的位置
-            function findCapturingMove() {
-                for (let y = 0; y < BOARD_SIZE; y++) {
-                    for (let x = 0; x < BOARD_SIZE; x++) {
-                        if (gameBoard[y][x]!== null ||!isValidMove(x, y, 'white')) continue;
-                        
-                        // 临时落子，检查是否能吃掉对方棋子
-                        gameBoard[y][x] = 'white';
-                        
-                        let captured = false;
-                        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-                        
-                        // 检查周围的对方棋子组
-                        for (const [dx, dy] of directions) {
-                            const newX = x + dx;
-                            const newY = y + dy;
-                            
-                            if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE && 
-                                gameBoard[newY][newX] === 'black') {
-                                
-                                const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
-                                let hasLiberty = false;
-                                
-                                function dfs(x, y) {
-                                    if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
-                                        visited[y][x] || gameBoard[y][x]!== 'black') {
-                                        return;
-                                    }
-                                    
-                                    visited[y][x] = true;
-                                    
-                                    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-                                    for (const [dx, dy] of directions) {
-                                        const nx = x + dx;
-                                        const ny = y + dy;
-                                        
-                                        if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
-                                            if (gameBoard[ny][nx] === null) {
-                                                hasLiberty = true;
-                                            } else if (gameBoard[ny][nx] === 'black' &&!visited[ny][nx]) {
-                                                dfs(nx, ny);
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                dfs(newX, newY);
-                                
-                                // 如果棋子组没有气，说明可以提子
-                                if (!hasLiberty) {
-                                    captured = true;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        // 恢复临时落子
-                        gameBoard[y][x] = null;
-                        
-                        if (captured) {
-                            return {x, y};
-                        }
-                    }
+            // 处理拖动
+            function handleDrag(e) {
+                if (!isDragging || !gameActive) return;
+                
+                // 防止页面滚动
+                e.preventDefault();
+                
+                // 获取触摸/鼠标位置
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                
+                // 获取元素位置
+                const rect = circleInner.getBoundingClientRect();
+                const outerCircle = document.querySelector('.circle-outer');
+                const outerRect = outerCircle.getBoundingClientRect();
+                const centerX = outerRect.left + outerRect.width / 2;
+                const centerY = outerRect.top + outerRect.height / 2;
+                
+                // 让小圈随拖拽移动
+                const dx = clientX - centerX;
+                const dy = clientY - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const maxDistance = (outerRect.width - rect.width) / 2;
+                const clampedDistance = Math.min(distance, maxDistance);
+                const angle = Math.atan2(dy, dx);
+                
+                const newX = clampedDistance * Math.cos(angle);
+                const newY = clampedDistance * Math.sin(angle);
+                
+                circleInner.style.transform = `translate(-50%, -50%) translate(${newX}px, ${newY}px)`;
+                
+                // 计算当前角度
+                const newAngle = getAngle(centerX, centerY, clientX, clientY);
+                const angleDiff = newAngle - currentAngle;
+                
+                // 检测顺时针旋转超过一定角度（30度）
+                if (angleDiff > 30 && angleDiff < 330) {
+                    shakeCount++;
+                    shakeCountElement.textContent = shakeCount;
+                    currentAngle = newAngle;
+                } else if (angleDiff < -330) {
+                    // 处理角度环绕的情况
+                    shakeCount++;
+                    shakeCountElement.textContent = shakeCount;
+                    currentAngle = newAngle;
                 }
                 
-                return null;
+                currentAngle = newAngle;
             }
             
-            // 寻找需要保护的位置
-            function findDefensiveMove() {
-                // 简单实现：暂时返回 null
-                return null;
+            // 处理结束拖动
+            function endDrag() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                isRising = false;
+                isFalling = true;
+                gameStatusElement.textContent = '当前状态: 旗帜下降中';
+                
+                // 释放拖动时，小圈回到中心
+                circleInner.style.transform = 'translate(-50%, -50%)';
             }
             
-            // 寻找可以形成三连子或四子的位置
-            function findOffensiveMove() {
-                // 简单实现：暂时返回 null
-                return null;
-            }
-            
-            // 提子
-            function capturePieces(x, y, opponentColor) {
-                const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-                let capturedCount = 0;
-                const currentPlayerColor = opponentColor === 'black'? 'white' : 'black';
-                
-                // 临时落子
-                gameBoard[y][x] = currentPlayerColor;
-                
-                // 检查周围的对方棋子组
-                for (const [dx, dy] of directions) {
-                    const newX = x + dx;
-                    const newY = y + dy;
-                    
-                    if (newX >= 0 && newX < BOARD_SIZE && newY >= 0 && newY < BOARD_SIZE && 
-                        gameBoard[newY][newX] === opponentColor) {
-                        
-                        const visited = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(false));
-                        const group = [];
-                        let hasLiberty = false;
-                        
-                        function dfs(x, y) {
-                            if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || 
-                                visited[y][x] || gameBoard[y][x]!== opponentColor) {
-                                return;
-                            }
-                            
-                            visited[y][x] = true;
-                            group.push({x, y});
-                            
-                            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-                            for (const [dx, dy] of directions) {
-                                const nx = x + dx;
-                                const ny = y + dy;
-                                
-                                if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
-                                    if (gameBoard[ny][nx] === null) {
-                                        hasLiberty = true;
-                                    } else if (gameBoard[ny][nx] === opponentColor &&!visited[ny][nx]) {
-                                        dfs(nx, ny);
-                                    }
-                                }
-                            }
-                        }
-                        
-                        dfs(newX, newY);
-                        
-                        // 如果棋子组没有气，移除这些棋子
-                        if (!hasLiberty) {
-                            capturedCount += group.length;
-                            for (const {x, y} of group) {
-                                gameBoard[y][x] = null;
-                                
-                                // 移除DOM元素
-                                const piece = boardElement.querySelector(`[data-x="${x}"][data-y="${y}"][data-color="${opponentColor}"]`);
-                                if (piece) {
-                                    piece.classList.add('animate-fade-out');
-                                    setTimeout(() => {
-                                        if (piece.parentNode) {
-                                            piece.parentNode.removeChild(piece);
-                                        }
-                                    }, 300);
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // 恢复临时落子
-                gameBoard[y][x] = currentPlayerColor;
-                
-                // 更新分数
-                if (opponentColor === 'black') {
-                    whiteScore += capturedCount;
-                } else {
-                    blackScore += capturedCount;
-                }
-                
-                updateScore();
-                
-                return capturedCount;
-            }
-            
-            // 更新游戏状态显示
-            function updateGameStatus() {
-                gameStatusElement.textContent = currentPlayer === 'black'? '当前回合: 玩家回合 (黑棋)' : '当前回合: AI回合 (白棋)';
-                playerIndicatorElement.className = 'w-6 h-6 rounded-full mr-3 animate-pulse';
-                playerIndicatorElement.classList.add(currentPlayer === 'black'? 'bg-black' : 'bg-white');
-            }
-            
-            // 更新分数显示
-            function updateScore() {
-                blackScoreElement.textContent = blackScore;
-                whiteScoreElement.textContent = whiteScore;
-                
-                // 更新获胜条件显示
-                winConditionElement.textContent = `目标: 吃掉对方${WINNING_CAPTURES}个棋子获胜 (当前: ${currentPlayer === 'black'? '黑' : '白'}方需要${WINNING_CAPTURES - (currentPlayer === 'black'? blackScore : whiteScore)}个)`;
-            }
-            
-            // 检查游戏是否结束
-            function checkGameEnd() {
-                // 检查是否达到获胜条件
-                if (blackScore >= WINNING_CAPTURES) {
-                    endGame('恭喜，你取得了胜利！');
-                    return;
-                }
-                
-                if (whiteScore >= WINNING_CAPTURES) {
-                    endGame('很遗憾，你输掉了这场对局。');
-                    return;
-                }
-                
-                // 简单实现：如果棋盘已满，游戏结束
-                let emptySpaces = 0;
-                for (let y = 0; y < BOARD_SIZE; y++) {
-                    for (let x = 0; x < BOARD_SIZE; x++) {
-                        if (gameBoard[y][x] === null) {
-                            emptySpaces++;
-                        }
-                    }
-                }
-                
-                if (emptySpaces === 0) {
-                    endGame();
-                }
-            }
-            
-            // 游戏结束
-            function endGame(message) {
-                gameActive = false;
-                
-                if (!message) {
-                    // 计算最终得分
-                    let blackTerritory = 0;
-                    let whiteTerritory = 0;
-                    
-                    for (let y = 0; y < BOARD_SIZE; y++) {
-                        for (let x = 0; x < BOARD_SIZE; x++) {
-                            if (gameBoard[y][x] === 'black') {
-                                blackTerritory++;
-                            } else if (gameBoard[y][x] === 'white') {
-                                whiteTerritory++;
-                            }
-                        }
-                    }
-                    
-                    if (blackTerritory + blackScore > whiteTerritory + whiteScore) {
-                        message = '恭喜，你取得了胜利！';
-                    } else if (blackTerritory + blackScore < whiteTerritory + whiteScore) {
-                        message = '很遗憾，你输掉了这场对局。';
-                    } else {
-                        message = '本局游戏平局！';
-                    }
-                }
-                
-                // 显示结果
-                resultTextElement.textContent = message;
-                resultOverlayElement.classList.remove('hidden');
+            // 结束游戏
+            function endGame() {
+                resultOverlay.classList.add('active');
+                totalShakesElement.textContent = shakeCount;
+                gameStatusElement.textContent = '当前状态: 挑战完成！';
             }
             
             // 重置游戏
             function resetGame() {
-                gameBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
-                currentPlayer = 'black';
+                shakeCount = 0;
+                flagPosition = 320;
+                flag.style.top = `${flagPosition}px`;
+                flag.style.right = '54px'; // 确保旗子在右侧
+                shakeCountElement.textContent = shakeCount;
+                resultOverlay.classList.remove('active');
                 gameActive = true;
-                moveHistory = [];
-                blackScore = 0;
-                whiteScore = 0;
+                isRising = false;
+                isFalling = false;
+                gameStatusElement.textContent = '当前状态: 准备就绪';
                 
-                initializeBoard();
-                updateGameStatus();
-                updateScore();
-                
-                resultOverlayElement.classList.add('hidden');
+                // 确保updateFlagPosition函数在重新开始后继续运行
+                if (!updateLoopRunning) {
+                    updateFlagPosition();
+                }
             }
             
-            // 悔棋
-            function undoMove() {
-                if (moveHistory.length === 0 ||!gameActive) return;
-                
-                // 撤销最近两步（玩家和AI的移动）
-                for (let i = 0; i < 2 && moveHistory.length > 0; i++) {
-                    const lastMove = moveHistory.pop();
-                    gameBoard[lastMove.y][lastMove.x] = null;
-                    
-                    // 移除DOM元素
-                    const piece = boardElement.querySelector(`[data-x="${lastMove.x}"][data-y="${lastMove.y}"][data-color="${lastMove.player}"]`);
-                    if (piece) {
-                        piece.classList.add('animate-fade-out');
-                        setTimeout(() => {
-                            if (piece.parentNode) {
-                                piece.parentNode.removeChild(piece);
-                            }
-                        }, 300);
-                    }
-                }
-                
-                // 回到玩家回合
-                currentPlayer = 'black';
-                updateGameStatus();
-                updateScore();
+            // 显示帮助信息
+            function showHelp() {
+                alert('游戏说明：\n1. 长按中央蓝色小圆圈并顺时针摇动\n2. 每次有效摇动会使国旗上升一点\n3. 松开手指，国旗会缓缓下降\n4. 将国旗升到旗杆顶端即完成挑战\n5. 尽量用最少的摇动次数完成');
             }
-
-// 切换夜间模式
-// 在DOMContentLoaded事件处理函数内部添加
-const themeToggle = document.getElementById('theme-toggle');
-const toggleIcon = document.getElementById('toggle-icon');
-const sun = document.getElementById('sun');
-const moon = document.getElementById('moon');
-const dayBg = document.getElementById('day-bg');
-const nightBg = document.getElementById('night-bg');
-const body = document.body;
-
-// 计算按钮位置的辅助函数
-const calculateTranslateX = () => {
-    const buttonWidth = themeToggle.offsetWidth;
-    const iconWidth = toggleIcon.offsetWidth;
-    const borderWidth = 2;
-    return buttonWidth - iconWidth - (borderWidth * 2);
-};
-
-// 应用深色模式
-function applyDarkMode() {
-    body.classList.add('dark-mode');
-    const translateX = calculateTranslateX() - 2;
-    toggleIcon.style.transform = `translateX(${translateX}px)`;
-    setTimeout(() => {
-        sun.style.opacity = '0';
-        moon.style.opacity = '1';
-    }, 300);
-    dayBg.style.opacity = '0';
-    nightBg.style.opacity = '1';
-    
-    // 只切换白色背景元素到夜间模式颜色
-    document.querySelectorAll('.bg-white').forEach(el => {
-        el.classList.remove('bg-white');
-        el.classList.add('bg-nightBlock');
-    });
-}
-
-// 应用浅色模式
-function applyLightMode() {
-    body.classList.remove('dark-mode');
-    sun.style.opacity = '1';
-    moon.style.opacity = '0';
-    setTimeout(() => {
-        toggleIcon.style.transform = 'translateX(0)';
-    }, 100);
-    dayBg.style.opacity = '1';
-    nightBg.style.opacity = '0';
-    
-    // 恢复白色背景元素
-    document.querySelectorAll('.bg-nightBlock').forEach(el => {
-        el.classList.remove('bg-nightBlock');
-        el.classList.add('bg-white');
-    });
-}
-
-// 按钮点击事件
-themeToggle.addEventListener('click', () => {
-    if (body.classList.contains('dark-mode')) {
-        applyLightMode();
-        localStorage.setItem('darkMode', 'false');
-    } else {
-        applyDarkMode();
-        localStorage.setItem('darkMode', 'true');
-    }
-});
-
-// 检查本地存储中的主题偏好
-const isDarkMode = localStorage.getItem('darkMode') === 'true';
-
-// 初始化主题
-if (isDarkMode) {
-    applyDarkMode();
-} else {
-    toggleIcon.style.left = '2px';
-}
-
-            // 事件监听
+            
+            // 事件监听 - 鼠标
+            circleInner.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('mouseleave', endDrag);
+            
+            // 事件监听 - 触摸
+            circleInner.addEventListener('touchstart', startDrag);
+            document.addEventListener('touchmove', handleDrag);
+            document.addEventListener('touchend', endDrag);
+            
+            // 按钮事件
             restartButton.addEventListener('click', resetGame);
             playAgainButton.addEventListener('click', resetGame);
-            undoButton.addEventListener('click', undoMove);
-            nightModeToggle.addEventListener('click', toggleNightMode);
+            helpButton.addEventListener('click', showHelp);
             
-            // 初始化游戏
-            initializeBoard();
-            updateGameStatus();
+            // 切换夜间模式
+            const themeToggle = document.getElementById('theme-toggle');
+            const toggleIcon = document.getElementById('toggle-icon');
+            const sun = document.getElementById('sun');
+            const moon = document.getElementById('moon');
+            const dayBg = document.getElementById('day-bg');
+            const nightBg = document.getElementById('night-bg');
+            const body = document.body;
+
+            // 计算按钮位置的辅助函数
+            const calculateTranslateX = () => {
+                const buttonWidth = themeToggle.offsetWidth;
+                const iconWidth = toggleIcon.offsetWidth;
+                const borderWidth = 2;
+                return buttonWidth - iconWidth - (borderWidth * 2);
+            };
+
+            // 应用深色模式
+            function applyDarkMode() {
+                body.classList.add('dark-mode');
+                const translateX = calculateTranslateX() - 2;
+                toggleIcon.style.transform = `translateX(${translateX}px)`;
+                setTimeout(() => {
+                    sun.style.opacity = '0';
+                    moon.style.opacity = '1';
+                }, 300);
+                dayBg.style.opacity = '0';
+                nightBg.style.opacity = '1';
+                
+                // 只切换白色背景元素到夜间模式颜色
+                document.querySelectorAll('.bg-white').forEach(el => {
+                    el.classList.remove('bg-white');
+                    el.classList.add('bg-nightBlock');
+                });
+            }
+
+            // 应用浅色模式
+            function applyLightMode() {
+                body.classList.remove('dark-mode');
+                sun.style.opacity = '1';
+                moon.style.opacity = '0';
+                setTimeout(() => {
+                    toggleIcon.style.transform = 'translateX(0)';
+                }, 100);
+                dayBg.style.opacity = '1';
+                nightBg.style.opacity = '0';
+                
+                // 恢复白色背景元素
+                document.querySelectorAll('.bg-nightBlock').forEach(el => {
+                    el.classList.remove('bg-nightBlock');
+                    el.classList.add('bg-white');
+                });
+            }
+
+            // 按钮点击事件
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('dark-mode')) {
+                    applyLightMode();
+                    localStorage.setItem('darkMode', 'false');
+                } else {
+                    applyDarkMode();
+                    localStorage.setItem('darkMode', 'true');
+                }
+            });
+
+            // 检查本地存储中的主题偏好
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+            // 初始化主题
+            if (isDarkMode) {
+                applyDarkMode();
+            } else {
+                toggleIcon.style.left = '2px';
+            }
+            
+            // 音乐播放功能已在页面底部实现
         });
     </script>
             <!-- 音频播放核心组件（放在页面底部） -->
