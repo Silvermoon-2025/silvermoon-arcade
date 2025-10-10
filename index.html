@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>银月的游戏咖厅</title>
-    <link rel="icon" href="历史爱好者服务专设网站（网页图标）.ico" type="image/x-icon">
+    <link rel="icon" href="历史爱好者爱好者服务专设网站（网页图标）.ico" type="image/x-icon">
     <link rel="shortcut icon" href="历史爱好者服务专设网站（网页图标）.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -23,75 +23,55 @@ extend: {
         nightBackground: '#121212',
         nightBoard: '#332a1b',
         nightText: '#e0e0e0',
-        nightBlock: '#364969' // 新增夜间模式块的颜色
+        nightBlock: '#364969'
     }
                 }
             }
         }
     </script>
     <style type="text/tailwindcss">
+/* 优化夜间模式下的游戏状态区域 */
+body.dark-mode .flex.justify-between.items-center.mb-4.px-4.py-3.bg-white.rounded-lg.shadow-sm {
+    background-color: theme('colors.nightBlock');
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 优化夜间模式下的游戏信息卡片 - 正确的选择器 */
+body.dark-mode .flex.flex-col.md\:flex-row.justify-center.items-center.space-y-6.md\:space-y-0.md\:space-x-6 > div:last-child.w-full.md\:w-64.bg-white.rounded-lg.shadow-lg.p-4 {
+    background-color: theme('colors.nightBlock') !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 调整游戏信息卡片内的文本和边框颜色 */
+body.dark-mode .border-b.border-gray-200 {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .text-gray-600 {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* 调整游戏规则列表项颜色 */
+body.dark-mode .text-sm.text-gray-600.space-y-1 li {
+    color: rgba(255, 255, 255, 0.8);
+}
+
 @layer utilities {
     .content-auto {
         content-visibility: auto;
     }
     
-    .province-item {
-        width: 100px;
-        height: 60px;
-        margin: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        cursor: default;
-        font-weight: 500;
-    }
-    
-    .province-unlit {
-        background-color: #e2e8f0;
-        color: transparent;
-        border: 2px dashed #94a3b8;
-    }
-    
-    .province-lit {
-        background-color: #3b82f6;
-        color: white;
-        border: 2px solid #2563eb;
-        transform: scale(1.05);
-    }
-    
-    .result-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.7);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.5s ease;
-    }
-    
-    .result-overlay.active {
-        opacity: 1;
-        pointer-events: all;
+    .board-grid {
+        background-image: linear-gradient(to right, theme('colors.black') 1px, transparent 1px),
+                          linear-gradient(to bottom, theme('colors.black') 1px, transparent 1px);
     }
 }
-
-/* 暗色模式全局样式 */
 
 body.dark-mode {
     background-color: theme('colors.nightBackground');
     color: theme('colors.nightText');
 }
 
-/* 在暗色模式下，将特定的灰色文本也转为夜间文本颜色 */
 body.dark-mode .text-gray-600,
 body.dark-mode .text-gray-700,
 body.dark-mode .text-gray-800 {
@@ -114,213 +94,331 @@ body.dark-mode .btn-secondary {
     color: theme('colors.primary');
 }
 
+body.dark-mode header {
+    background-color: #165DFF;
+}
+
 body.dark-mode .text-black {
     color: theme('colors.nightText');
 }
 
-/* 暗色模式下的省份样式 */
-body.dark-mode .province-unlit {
-    background-color: #1e293b;
-    border-color: #475569;
+/* 反应游戏样式 */
+.game-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f0f0f0;
 }
 
-body.dark-mode .province-lit {
-    background-color: #3b82f6;
+/* 夜间模式下的游戏容器背景 */
+body.dark-mode .game-container {
+    background-color: #1e1e1e;
+    border-color: #444;
+}
+
+/* 修改判定线样式，只保留一条线 */
+.target-line {
+    position: absolute;
+    height: 4px;
+    width: 100%;
+    top: 70%;
+    background-color: #ff3e3e;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(255, 62, 62, 0.7);
+}
+
+.falling-block {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #165DFF;
+    border-radius: 4px;
+    transition: transform 0.1s linear;
+}
+
+/* 夜间模式下方块样式 */
+body.dark-mode .falling-block {
+    background-color: theme('colors.nightBlock');
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 方块接近判定线时的视觉反馈 */
+.falling-block.near-target {
+    background-color: #4CAF50;
+}
+
+/* 夜间模式下方块接近判定线的视觉反馈 */
+body.dark-mode .falling-block.near-target {
+    background-color: #388E3C;
+}
+
+.control-button {
+    background-color: #FFD166;
+    color: #165DFF;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.control-button:hover {
+    transform: scale(1.05);
+    background-color: #ffc433;
+}
+
+.life-icon {
+    color: #ff3e3e;
+    font-size: 1.5rem;
+    margin: 0 5px;
+}
+
+/* 游戏结束遮罩样式 */
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.game-over-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.game-over-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .game-over-content {
+    background-color: theme('colors.nightBlock');
+    color: theme('colors.nightText');
+}
+
+.game-over-score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #165DFF;
+    margin: 15px 0;
+}
+
+body.dark-mode .game-over-score {
+    color: #FFD166;
+}
+
+.restart-button {
+    background-color: #165DFF;
     color: white;
-    border-color: #60a5fa;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 20px;
 }
 
+.restart-button:hover {
+    background-color: #0047CC;
+    transform: scale(1.05);
+}
+
+/* 夜间模式下的控制按钮样式 */
+body.dark-mode .control-button {
+    background-color: theme('colors.secondary');
+    color: theme('colors.primary');
+}
+
+body.dark-mode .control-button:hover {
+    background-color: #ffc433;
+}
 </style>
 </head>
 <body class="bg-neutral min-h-screen font-sans text-black">
     <!-- 顶部导航栏 -->
     <header class="bg-primary text-white shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <!-- 添加跳转块 -->
             <div class="flex items-center mb-4 md:mb-0">
                 <a href="https://silvermoon-2025.github.io/historyloverweb/" class="flex items-center hover:opacity-90 transition-opacity">
                     <i class="fa fa-book text-2xl mr-2"></i>
                     <span class="text-xl font-bold">历史爱好者服务专设网站</span>
                 </a>
             </div>
-            <!-- 将网站标题名移动到右侧 -->
             <div class="flex items-center space-x-2">
                 <i class="fa fa-gamepad text-secondary text-2xl"></i>
                 <h1 class="text-xl md:text-2xl font-bold tracking-tight">银月的游戏咖厅</h1>
             </div>
-            <!-- 音乐播放按钮（放在夜间模式按钮上方） -->
-<button onclick="toggleMusic()" style="position:fixed; bottom:6rem; right:1.5rem; width:3rem; height:3rem; border-radius:50%; background:white; border:2px solid #3b82f6; cursor:pointer; z-index:999;">
-  <i id="musicIcon" class="fa fa-music" style="color:#3b82f6; font-size:1.2rem;"></i>
-</button>
-            <!-- 夜间模式切换按钮 -->
-<button id="theme-toggle" class="fixed bottom-6 right-6 w-32 h-14 rounded-full border-2 border-yellow-400 shadow-lg overflow-hidden transition-all duration-300 ease-in-out z-50 cursor-pointer hover:scale-105 active:scale-95">
-    <div class="relative w-full h-full overflow-hidden">
-        <!-- 白天模式背景 - 云彩 -->
-        <div id="day-bg" class="absolute inset-0 bg-blue-100 transition-opacity duration-500 ease-in-out">
-            <div class="absolute top-3 left-2 w-12 h-4 bg-white rounded-full"></div>
-            <div class="absolute top-5 left-7 w-10 h-4 bg-white rounded-full"></div>
-            <div class="absolute top-3 right-2 w-12 h-4 bg-white rounded-full"></div>
-            <div class="absolute top-5 right-7 w-10 h-4 bg-white rounded-full"></div>
-        </div>
-        
-        <!-- 夜晚模式背景 - 星星 -->
-        <div id="night-bg" class="absolute inset-0 bg-black opacity-0 transition-opacity duration-500 ease-in-out">
-            <!-- 星星只分布在左侧区域 -->
-            <div class="absolute top-3 left-3 w-1 h-1 bg-yellow-300 rounded-full animate-pulse"></div>
-            <div class="absolute top-6 left-8 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
-            <div class="absolute top-4 left-12 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1s"></div>
-            <div class="absolute bottom-3 left-5 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1.5s"></div>
-            <div class="absolute bottom-5 left-10 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 2s"></div>
-        </div>
-        
-        <!-- 太阳/月亮组合 -->
-        <div id="toggle-icon" class="absolute top-1 w-12 h-12 rounded-full transition-transform duration-700 ease-in-out transform">
-            <!-- 太阳 -->
-            <div id="sun" class="absolute inset-0 w-full h-full bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50 transition-opacity duration-300 ease-in-out">
-                <!-- 太阳光芒 -->
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="absolute w-14 h-1.5 bg-yellow-400 rounded-full"></div>
-                    <div class="absolute w-1.5 h-14 bg-yellow-400 rounded-full"></div>
-                    <div class="absolute w-10 h-1.5 bg-yellow-400 rounded-full transform rotate-45"></div>
-                    <div class="absolute w-1.5 h-10 bg-yellow-400 rounded-full transform rotate-45"></div>
+            <button onclick="toggleMusic()" style="position:fixed; bottom:6rem; right:1.5rem; width:3rem; height:3rem; border-radius:50%; background:white; border:2px solid #3b82f6; cursor:pointer; z-index:999;">
+              <i id="musicIcon" class="fa fa-music" style="color:#3b82f6; font-size:1.2rem;"></i>
+            </button>
+            <button id="theme-toggle" class="fixed bottom-6 right-6 w-32 h-14 rounded-full border-2 border-yellow-400 shadow-lg overflow-hidden transition-all duration-300 ease-in-out z-50 cursor-pointer hover:scale-105 active:scale-95">
+                <div class="relative w-full h-full overflow-hidden">
+                    <div id="day-bg" class="absolute inset-0 bg-blue-100 transition-opacity duration-500 ease-in-out">
+                        <div class="absolute top-3 left-2 w-12 h-4 bg-white rounded-full"></div>
+                        <div class="absolute top-5 left-7 w-10 h-4 bg-white rounded-full"></div>
+                        <div class="absolute top-3 right-2 w-12 h-4 bg-white rounded-full"></div>
+                        <div class="absolute top-5 right-7 w-10 h-4 bg-white rounded-full"></div>
+                    </div>
+                    <div id="night-bg" class="absolute inset-0 bg-black opacity-0 transition-opacity duration-500 ease-in-out">
+                        <div class="absolute top-3 left-3 w-1 h-1 bg-yellow-300 rounded-full animate-pulse"></div>
+                        <div class="absolute top-6 left-8 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+                        <div class="absolute top-4 left-12 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1s"></div>
+                        <div class="absolute bottom-3 left-5 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1.5s"></div>
+                        <div class="absolute bottom-5 left-10 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 2s"></div>
+                    </div>
+                    <div id="toggle-icon" class="absolute top-1 w-12 h-12 rounded-full transition-transform duration-700 ease-in-out transform">
+                        <div id="sun" class="absolute inset-0 w-full h-full bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50 transition-opacity duration-300 ease-in-out">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="absolute w-14 h-1.5 bg-yellow-400 rounded-full"></div>
+                                <div class="absolute w-1.5 h-14 bg-yellow-400 rounded-full"></div>
+                                <div class="absolute w-10 h-1.5 bg-yellow-400 rounded-full transform rotate-45"></div>
+                                <div class="absolute w-1.5 h-10 bg-yellow-400 rounded-full transform rotate-45"></div>
+                            </div>
+                        </div>
+                        <div id="moon" class="absolute inset-0 w-full h-full bg-gray-200 rounded-full shadow-lg opacity-0 transition-opacity duration-300 ease-in-out">
+                            <div class="absolute top-2 left-2 w-2 h-2 bg-gray-300 rounded-full"></div>
+                            <div class="absolute top-4 right-3 w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
+                            <div class="absolute bottom-3 left-3 w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- 月亮 -->
-            <div id="moon" class="absolute inset-0 w-full h-full bg-gray-200 rounded-full shadow-lg opacity-0 transition-opacity duration-300 ease-in-out">
-                <!-- 月亮坑洼 -->
-                <div class="absolute top-2 left-2 w-2 h-2 bg-gray-300 rounded-full"></div>
-                <div class="absolute top-4 right-3 w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
-                <div class="absolute bottom-3 left-3 w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
-            </div>
-        </div>
-    </div>
-</button>
+            </button>
         </div>
     </header>
 
     <!-- 主内容区 -->
-    <main class="container mx-auto px-4 py-8 max-w-6xl">
-        <!-- 开放时间区域 -->
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
         <div class="text-center mb-8">
             <p class="text-lg font-medium">开放时间</p>
             <p class="text-xs text-gray-600">Open Time</p>
-            <p class="text-sm">2025年10月2日 - 2025年10月8日</p>
+            <p class="text-sm">2025年10月10日 - 2025年12月31日</p>
         </div>
 
-        <!-- 站嵌音乐信息块 -->
-<div class="max-w-md mx-auto mb-8 relative">
-  <!-- 卡片主体 -->
-  <div class="bg-white dark:bg-blue-700 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700">
-    <!-- 标题区域 -->
-    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 dark:border-gray-700">
-      <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center">
-        <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-2">
-          <i class="fa fa-music text-blue-600 dark:text-blue-400 text-sm"></i>
-        </span>
-        【站嵌音乐】
-      </h3>
-      <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-        音乐信息
-      </span>
-    </div>
-    
-    <!-- 内容区域 -->
-    <div class="grid grid-cols-1 gap-3 text-sm">
-      <div class="flex items-center">
-        <span class="w-28 text-gray-500 dark:text-gray-400">绑定时间：</span>
-        <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月2日</span>
-      </div>
-      <div class="flex items-center">
-        <span class="w-28 text-gray-500 dark:text-gray-400">绑定音乐：</span>
-        <span class="text-gray-800 dark:text-gray-200 font-medium">【bilibili音乐】一话一世界 《一花依世界》方言合唱版 - 雪霏岚岚、宁采臣丶在唱歌、漆柚柚柚、倒悬的橘子、早木旋子、Warma、YUKIri、-LKs-、張小她、A路人、 双笙子</span>
-      </div>
-      <div class="flex items-center">
-        <span class="w-28 text-gray-500 dark:text-gray-400">续播时间：</span>
-        <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月2日~2025年10月8日</span>
-      </div>
-    </div>
-  </div>
-  
-  <!-- 装饰元素 -->
-  <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg opacity-20 dark:opacity-30"></div>
-</div>
-
-        <!-- 游戏标题 -->
-        <div class="text-center mb-8">
-            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">省份记忆游戏</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">在输入框中输入中国的省份、直辖市、特别行政区或自治区名称，正确输入后对应的区域将会被点亮。挑战在限定时间内点亮所有区域！</p>
-        </div>
-
-        <!-- 游戏状态信息 -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-4 px-4 py-3 bg-white rounded-lg shadow-sm">
-            <div class="flex items-center mb-2 md:mb-0">
-                <div class="w-6 h-6 rounded-full bg-red-600 mr-3"></div>
-                <span id="game-status" class="font-medium">当前状态: 准备就绪</span>
+        <div class="max-w-md mx-auto mb-8 relative">
+          <div class="bg-white dark:bg-blue-700 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 dark:border-gray-700">
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center">
+                <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-2">
+                  <i class="fa fa-music text-blue-600 dark:text-blue-400 text-sm"></i>
+                </span>
+                【站嵌音乐】
+              </h3>
+              <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                音乐信息
+              </span>
             </div>
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center">
-                    <span class="text-gray-600 mr-2">倒计时: </span>
-                    <span id="countdown" class="font-medium">2:30</span>
+            <div class="grid grid-cols-1 gap-3 text-sm">
+              <div class="flex items-center">
+                <span class="w-28 text-gray-500 dark:text-gray-400">绑定时间：</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月10日</span>
+              </div>
+              <div class="flex items-center">
+                <span class="w-28 text-gray-500 dark:text-gray-400">绑定音乐：</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">Beatrix - Ilan Eshkeri</span>
+              </div>
+              <div class="flex items-center">
+                <span class="w-28 text-gray-500 dark:text-gray-400">续播时间：</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月10日~2025年12月31日</span>
+              </div>
+            </div>
+          </div>
+          <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg opacity-20 dark:opacity-30"></div>
+        </div>
+
+        <div class="text-center mb-8">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">反应力挑战 - 快速反应游戏</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">当方块接近判定线时，按下按钮得分！错过或过早按下都会受到惩罚。</p>
+        </div>
+
+        <div class="flex justify-between items-center mb-4 px-4 py-3 bg-white rounded-lg shadow-sm">
+            <div class="flex items-center">
+                <span id="game-status" class="font-medium">点击开始游戏</span>
+            </div>
+            <div class="flex items-center">
+                <span class="mr-2">生命:</span>
+                <div id="lives-container">
+                    <i class="fa fa-heart life-icon"></i>
+                    <i class="fa fa-heart life-icon"></i>
+                    <i class="fa fa-heart life-icon"></i>
                 </div>
-                <div class="flex items-center">
-                    <span class="text-gray-600 mr-2">已点亮: </span>
-                    <span id="lit-count" class="font-medium">0</span>
-                    <span class="text-gray-600 mx-1">/</span>
-                    <span id="total-count" class="font-medium">34</span>
-                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button id="start-btn" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center">
+                    <i class="fa fa-play mr-2"></i> 开始游戏
+                </button>
                 <button id="restart-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center">
                     <i class="fa fa-refresh mr-2"></i> 重新开始
                 </button>
             </div>
         </div>
 
-        <!-- 游戏区域 -->
-        <div class="flex flex-col lg:flex-row justify-center items-start space-y-6 lg:space-y-0 lg:space-x-6">
-            <!-- 输入区域 -->
-            <div class="w-full lg:w-80 bg-white rounded-lg shadow-xl p-6">
-                <h3 class="text-xl font-semibold mb-4">省份输入</h3>
-                <div class="mb-4">
-                    <label for="province-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">请输入省份/直辖市/特别行政区/自治区名称</label>
-                    <input type="text" id="province-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="例如：北京市">
-                </div>
-                <button id="confirm-btn" class="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center">
-                    <i class="fa fa-check mr-2"></i> 确认
-                </button>
-                <div id="message" class="mt-4 text-center py-2 rounded-lg hidden"></div>
-                
-                <div class="mt-6">
-                    <h4 class="font-medium mb-2">游戏规则</h4>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• 在输入框中输入中国省级行政区名称</li>
-                        <li>• 点击确认按钮验证输入</li>
-                        <li>• 正确输入会点亮对应区域</li>
-                        <li>• 限时2分30秒，点亮所有34个区域</li>
-                        <li>• 可以使用简称（如"北京"而非"北京市"）</li>
-                    </ul>
+        <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
+            <div class="game-container bg-white shadow-xl rounded-lg">
+                <!-- 将判定区改为判定线 -->
+                <div class="target-line"></div>
+                <!-- 游戏结束遮罩 -->
+                <div id="game-over-overlay" class="game-over-overlay">
+                    <div class="game-over-content">
+                        <h3 class="text-xl font-bold">游戏结束</h3>
+                        <p class="game-over-score">您的得分为 <span id="final-score">0</span></p>
+                        <button id="play-again-btn" class="restart-button">
+                            <i class="fa fa-refresh mr-2"></i> 重新再来
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- 省份展示区域 -->
-            <div class="w-full lg:flex-1 bg-white rounded-lg shadow-lg p-4">
-                <h3 class="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">待点亮区域</h3>
-                <div id="provinces-container" class="flex flex-wrap justify-center">
-                    <!-- 省份区域将通过JS动态生成 -->
+            <div class="w-full md:w-64 bg-white rounded-lg shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">游戏信息</h3>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">当前分数</span>
+                        <span id="score" class="font-medium">0</span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-medium mb-2">游戏规则</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• 方块会从顶部随机位置落下</li>
+                        <li>• 当方块接近红色判定线时，按下按钮得分</li>
+                        <li>• 过早或过晚按下按钮不得分</li>
+                        <li>• 方块超过判定线未被按到，扣除一条命</li>
+                        <li>• 共有3条命，用完游戏结束</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-6">
+                    <button id="action-btn" class="control-button w-full" disabled>
+                        <i class="fa fa-hand-pointer-o mr-2"></i> 点击判定
+                    </button>
                 </div>
             </div>
-        </div>
-        
-        <!-- 游戏结果遮罩 -->
-        <div id="result-overlay" class="result-overlay">
-            <h3 id="result-title" class="text-4xl font-bold text-white mb-6"></h3>
-            <p id="result-stats" class="text-xl text-white mb-6"></p>
-            <button id="play-again-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-6 py-3 rounded-lg font-medium text-lg transition-all duration-200 transform hover:scale-105">
-                再来一次
-            </button>
         </div>
     </main>
 
-    <!-- 页脚 -->
     <footer class="bg-primary text-white mt-12 py-6">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -345,331 +443,370 @@ body.dark-mode .province-lit {
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 中国省级行政区列表（包含全称和简称）
-            const provinces = [
-                { fullName: "北京市", shortName: "北京" },
-                { fullName: "天津市", shortName: "天津" },
-                { fullName: "河北省", shortName: "河北" },
-                { fullName: "山西省", shortName: "山西" },
-                { fullName: "内蒙古自治区", shortName: "内蒙古" },
-                { fullName: "辽宁省", shortName: "辽宁" },
-                { fullName: "吉林省", shortName: "吉林" },
-                { fullName: "黑龙江省", shortName: "黑龙江" },
-                { fullName: "上海市", shortName: "上海" },
-                { fullName: "江苏省", shortName: "江苏" },
-                { fullName: "浙江省", shortName: "浙江" },
-                { fullName: "安徽省", shortName: "安徽" },
-                { fullName: "福建省", shortName: "福建" },
-                { fullName: "江西省", shortName: "江西" },
-                { fullName: "山东省", shortName: "山东" },
-                { fullName: "河南省", shortName: "河南" },
-                { fullName: "湖北省", shortName: "湖北" },
-                { fullName: "湖南省", shortName: "湖南" },
-                { fullName: "广东省", shortName: "广东" },
-                { fullName: "广西壮族自治区", shortName: "广西" },
-                { fullName: "海南省", shortName: "海南" },
-                { fullName: "重庆市", shortName: "重庆" },
-                { fullName: "四川省", shortName: "四川" },
-                { fullName: "贵州省", shortName: "贵州" },
-                { fullName: "云南省", shortName: "云南" },
-                { fullName: "西藏自治区", shortName: "西藏" },
-                { fullName: "陕西省", shortName: "陕西" },
-                { fullName: "甘肃省", shortName: "甘肃" },
-                { fullName: "青海省", shortName: "青海" },
-                { fullName: "宁夏回族自治区", shortName: "宁夏" },
-                { fullName: "新疆维吾尔自治区", shortName: "新疆" },
-                { fullName: "香港特别行政区", shortName: "香港" },
-                { fullName: "澳门特别行政区", shortName: "澳门" },
-                { fullName: "台湾省", shortName: "台湾" }
-            ];
-            
-            // 获取DOM元素
-            const provincesContainer = document.getElementById('provinces-container');
-            const provinceInput = document.getElementById('province-input');
-            const confirmBtn = document.getElementById('confirm-btn');
-            const message = document.getElementById('message');
-            const litCountElement = document.getElementById('lit-count');
-            const totalCountElement = document.getElementById('total-count');
-            const gameStatusElement = document.getElementById('game-status');
-            const restartButton = document.getElementById('restart-btn');
-            const playAgainButton = document.getElementById('play-again-btn');
-            const resultOverlay = document.getElementById('result-overlay');
-            const resultTitle = document.getElementById('result-title');
-            const resultStats = document.getElementById('result-stats');
-            const countdownElement = document.getElementById('countdown');
+            // 游戏常量
+            const GAME_HEIGHT = 500;
+            const BLOCK_SIZE = 50;
+            // 获取判定线的实际位置（从CSS中获取）
+            const targetLine = document.querySelector('.target-line');
+            const TARGET_LINE_TOP = parseInt(window.getComputedStyle(targetLine).top);
+            const FALL_SPEED = 5; // 方块下落速度（中快）
+            const MAX_LIVES = 3;
+            const NEAR_TARGET_RANGE = 80; // 接近判定线的范围
             
             // 游戏状态
-            let litProvinces = [];
-            let gameActive = true;
-            let timeLeft = 2 * 60 + 30; // 2分30秒，以秒为单位
-            let countdownInterval;
+            let score = 0;
+            let lives = MAX_LIVES;
+            let gameActive = false; // 初始状态设置为未开始
+            let fallingBlocks = [];
+            let gameLoop;
+            let blockSpawnTimer;
             
-            // 初始化省份容器
-            function initializeProvinces() {
-                provincesContainer.innerHTML = '';
-                provinces.forEach(province => {
-                    const provinceElement = document.createElement('div');
-                    provinceElement.className = 'province-item province-unlit';
-                    provinceElement.dataset.fullName = province.fullName;
-                    provinceElement.dataset.shortName = province.shortName;
-                    provinceElement.textContent = province.fullName;
-                    provincesContainer.appendChild(provinceElement);
-                });
-                
-                totalCountElement.textContent = provinces.length;
-                litCountElement.textContent = '0';
-            }
+            // DOM元素
+            const gameContainer = document.querySelector('.game-container');
+            const actionButton = document.getElementById('action-btn');
+            const startButton = document.getElementById('start-btn');
+            const restartButton = document.getElementById('restart-btn');
+            const playAgainButton = document.getElementById('play-again-btn');
+            const scoreElement = document.getElementById('score');
+            const gameStatusElement = document.getElementById('game-status');
+            const livesContainer = document.getElementById('lives-container');
+            const gameOverOverlay = document.getElementById('game-over-overlay');
+            const finalScoreElement = document.getElementById('final-score');
             
-            // 显示消息
-            function showMessage(text, isError = false) {
-                message.textContent = text;
-                message.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+            // 开始游戏
+            function startGame() {
+                // 重置游戏状态
+                score = 0;
+                lives = MAX_LIVES;
+                gameActive = true;
+                fallingBlocks = [];
                 
-                if (isError) {
-                    message.classList.add('bg-red-100', 'text-red-700');
-                } else {
-                    message.classList.add('bg-green-100', 'text-green-700');
+                // 清空游戏容器
+                while (gameContainer.children.length > 2) { // 保留判定线和结束遮罩
+                    gameContainer.removeChild(gameContainer.lastChild);
                 }
                 
-                // 3秒后隐藏消息
-                setTimeout(() => {
-                    message.classList.add('hidden');
-                }, 3000);
+                // 更新UI
+                updateScore();
+                updateLives();
+                gameStatusElement.textContent = `当前分数: ${score}`;
+                actionButton.disabled = false;
+                startButton.disabled = true;
+                
+                // 隐藏游戏结束遮罩
+                gameOverOverlay.classList.remove('active');
+                
+                // 开始生成方块
+                startSpawningBlocks();
+                
+                // 开始游戏循环
+                if (gameLoop) clearInterval(gameLoop);
+                gameLoop = setInterval(updateGame, 20);
             }
             
-            // 检查并点亮省份
-            function checkAndLightProvince(inputText) {
+            // 重新开始（重置后默认暂停）
+            function resetGame() {
+                // 停止游戏
+                gameActive = false;
+                clearInterval(gameLoop);
+                clearInterval(blockSpawnTimer);
+                
+                // 重置游戏状态
+                score = 0;
+                lives = MAX_LIVES;
+                fallingBlocks = [];
+                
+                // 清空游戏容器
+                while (gameContainer.children.length > 2) { // 保留判定线和结束遮罩
+                    gameContainer.removeChild(gameContainer.lastChild);
+                }
+                
+                // 更新UI为暂停状态
+                updateScore();
+                updateLives();
+                gameStatusElement.textContent = `点击开始游戏`;
+                actionButton.disabled = true;
+                startButton.disabled = false;
+                
+                // 隐藏游戏结束遮罩
+                gameOverOverlay.classList.remove('active');
+            }
+            
+            // 生成方块
+            function spawnBlock() {
                 if (!gameActive) return;
                 
-                const trimmedInput = inputText.trim();
-                if (!trimmedInput) {
-                    showMessage('请输入省份名称', true);
-                    return;
+                // 随机水平位置
+                const maxX = gameContainer.clientWidth - BLOCK_SIZE;
+                const x = Math.floor(Math.random() * maxX);
+                
+                // 创建方块元素
+                const block = document.createElement('div');
+                block.className = 'falling-block';
+                block.style.left = `${x}px`;
+                block.style.top = '-50px'; // 从容器顶部外开始
+                block.dataset.x = x;
+                block.dataset.y = -50;
+                
+                gameContainer.appendChild(block);
+                fallingBlocks.push(block);
+            }
+            
+            // 开始生成方块计时器
+            function startSpawningBlocks() {
+                // 清除之前的计时器，防止多次启动
+                if (blockSpawnTimer) clearInterval(blockSpawnTimer);
+                
+                // 立即生成一个方块
+                spawnBlock();
+                
+                // 之后不是固定时间生成，而是在方块被移除后再生成新的方块
+                // 移除固定的计时器
                 }
                 
-                // 查找匹配的省份
-                const matchedProvince = provinces.find(prov => 
-                    prov.fullName === trimmedInput || prov.shortName === trimmedInput
-                );
-                
-                if (!matchedProvince) {
-                    showMessage('名称输入错误，请重新输入', true);
-                    return;
+                // 生成新方块的函数（在当前方块被处理后调用）
+                function spawnNextBlock() {
+                    if (gameActive) {
+                        // 延迟一小段时间再生成下一个方块，给玩家一些准备时间
+                        setTimeout(() => {
+                            if (gameActive) {
+                                spawnBlock();
+                            }
+                        }, 1000); // 1秒延迟
+                    }
                 }
                 
-                // 检查是否已经点亮
-                if (litProvinces.includes(matchedProvince.fullName)) {
-                    showMessage(`"${matchedProvince.fullName}"已经点亮了哦！`);
-                    return;
+                // 游戏主循环
+                function updateGame() {
+                    if (!gameActive) return;
+                    
+                    // 更新所有方块位置
+                    for (let i = fallingBlocks.length - 1; i >= 0; i--) {
+                        const block = fallingBlocks[i];
+                        let y = parseInt(block.dataset.y);
+                        y += FALL_SPEED;
+                        block.dataset.y = y;
+                        block.style.transform = `translateY(${y}px)`;
+                        
+                        // 检查方块是否接近判定线，添加视觉反馈
+                        const isNearTarget = y + BLOCK_SIZE > TARGET_LINE_TOP - NEAR_TARGET_RANGE && y < TARGET_LINE_TOP + BLOCK_SIZE;
+                        if (isNearTarget) {
+                            block.classList.add('near-target');
+                        } else {
+                            block.classList.remove('near-target');
+                        }
+                        
+                        // 检查方块是否已超过判定线 - 符合要求：超过判定线位置才消失扣血
+                        if (y > TARGET_LINE_TOP + BLOCK_SIZE / 2) {
+                            // 方块已超过判定线，扣生命值
+                            loseLife();
+                            // 清空所有方块
+                            clearAllBlocks();
+                            // 生成下一个方块
+                            spawnNextBlock();
+                            break;
+                        } else if (y > GAME_HEIGHT) {
+                            // 方块已经完全移出游戏区域，直接移除不扣血
+                            removeBlock(block, i);
+                            // 生成下一个方块
+                            spawnNextBlock();
+                        }
+                    }
                 }
                 
-                // 点亮省份
-                litProvinces.push(matchedProvince.fullName);
-                const provinceElement = document.querySelector(`[data-full-name="${matchedProvince.fullName}"]`);
-                provinceElement.classList.remove('province-unlit');
-                provinceElement.classList.add('province-lit');
-                
-                // 更新计数
-                litCountElement.textContent = litProvinces.length;
-                showMessage(`恭喜，"${matchedProvince.fullName}"点亮成功！`);
-                
-                // 如果是第一个点亮的省份，将状态改为游戏进行中
-                if (litProvinces.length === 1) {
-                    gameStatusElement.textContent = '当前状态: 游戏进行中';
+                // 处理按钮点击
+                function handleAction() {
+                    if (!gameActive) return;
+                    
+                    let scored = false;
+                    
+                    // 检查是否有方块接近判定线
+                    for (let i = fallingBlocks.length - 1; i >= 0; i--) {
+                        const block = fallingBlocks[i];
+                        const y = parseInt(block.dataset.y);
+                        
+                        // 检查方块是否在判定线附近的有效区域内
+                        if (y + BLOCK_SIZE > TARGET_LINE_TOP - NEAR_TARGET_RANGE && y < TARGET_LINE_TOP + BLOCK_SIZE) {
+                            // 得分
+                            score += 10;
+                            updateScore();
+                            scored = true;
+                            
+                            // 添加得分视觉反馈
+                            block.style.backgroundColor = '#FFD166';
+                            setTimeout(() => {
+                                removeBlock(block, i);
+                                // 生成下一个方块
+                                spawnNextBlock();
+                            }, 100);
+                            break;
+                        }
+                    }
+                    
+                    // 如果没得分，说明过早或过晚点击
+                    if (!scored) {
+                        // 添加错误反馈，比如按钮闪烁
+                        actionButton.style.backgroundColor = '#ff6b6b';
+                        setTimeout(() => {
+                            actionButton.style.backgroundColor = '';
+                        }, 200);
+                    }
                 }
-                
-                // 清空输入框
-                provinceInput.value = '';
-                
-                // 检查是否全部点亮
-                if (litProvinces.length === provinces.length) {
-                    endGame(true);
+            
+            // 移除方块
+            function removeBlock(block, index) {
+                if (block && block.parentNode === gameContainer) {
+                    gameContainer.removeChild(block);
+                }
+                if (index >= 0 && index < fallingBlocks.length) {
+                    fallingBlocks.splice(index, 1);
                 }
             }
             
-            // 开始倒计时
-            function startCountdown() {
-                clearInterval(countdownInterval);
+            // 清除所有方块
+            function clearAllBlocks() {
+                // 清空游戏容器
+                while (gameContainer.children.length > 2) { // 保留判定线和结束遮罩
+                    gameContainer.removeChild(gameContainer.lastChild);
+                }
+                fallingBlocks = [];
+            }
+            
+            // 扣除生命值
+            function loseLife() {
+                lives--;
+                updateLives();
                 
-                countdownInterval = setInterval(() => {
-                    timeLeft--;
-                    
-                    // 格式化时间显示
-                    const minutes = Math.floor(timeLeft / 60);
-                    const seconds = timeLeft % 60;
-                    countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                    
-                    // 时间到
-                    if (timeLeft <= 0) {
-                        clearInterval(countdownInterval);
-                        endGame(false);
-                    }
-                }, 1000);
+                if (lives <= 0) {
+                    endGame();
+                }
+            }
+            
+            // 更新生命值显示
+            function updateLives() {
+                livesContainer.innerHTML = '';
+                for (let i = 0; i < lives; i++) {
+                    const heart = document.createElement('i');
+                    heart.className = 'fa fa-heart life-icon';
+                    livesContainer.appendChild(heart);
+                }
+                // 显示已失去的生命
+                for (let i = lives; i < MAX_LIVES; i++) {
+                    const heart = document.createElement('i');
+                    heart.className = 'fa fa-heart-o life-icon';
+                    livesContainer.appendChild(heart);
+                }
+            }
+            
+            // 更新分数
+            function updateScore() {
+                scoreElement.textContent = score;
+                gameStatusElement.textContent = `当前分数: ${score}`;
             }
             
             // 结束游戏
-            function endGame(isSuccess) {
+            function endGame() {
                 gameActive = false;
-                clearInterval(countdownInterval);
+                clearInterval(gameLoop);
+                clearInterval(blockSpawnTimer);
                 
-                if (isSuccess) {
-                    resultTitle.textContent = '恭喜你！你已成功完成点亮省份挑战。';
-                    gameStatusElement.textContent = '当前状态: 挑战成功！';
-                } else {
-                    resultTitle.textContent = '你没有点亮全部省份，再接再厉。';
-                    gameStatusElement.textContent = '当前状态: 挑战结束';
-                }
+                // 显示最终得分在遮罩上
+                finalScoreElement.textContent = score;
                 
-                resultStats.textContent = `已点亮省份数: ${litProvinces.length}/${provinces.length}`;
-                resultOverlay.classList.add('active');
-            }
-            
-            // 重置游戏
-            function resetGame() {
-                litProvinces = [];
-                gameActive = true;
-                timeLeft = 2 * 60 + 30;
-                countdownElement.textContent = '2:30';
-                provinceInput.value = '';
-                message.classList.add('hidden');
-                resultOverlay.classList.remove('active');
-                gameStatusElement.textContent = '当前状态: 准备就绪';
+                // 显示游戏结束遮罩
+                gameOverOverlay.classList.add('active');
                 
-                // 重置所有省份为未点亮状态
-                document.querySelectorAll('.province-item').forEach(item => {
-                    item.classList.remove('province-lit');
-                    item.classList.add('province-unlit');
-                });
-                
-                litCountElement.textContent = '0';
-                startCountdown();
+                // 禁用开始按钮和判定按钮
+                startButton.disabled = false;
+                actionButton.disabled = true;
             }
             
             // 事件监听
-            confirmBtn.addEventListener('click', () => {
-                checkAndLightProvince(provinceInput.value);
-            });
-            
-            // 回车键提交
-            provinceInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    checkAndLightProvince(provinceInput.value);
-                }
-            });
-            
+            actionButton.addEventListener('click', handleAction);
+            startButton.addEventListener('click', startGame);
             restartButton.addEventListener('click', resetGame);
             playAgainButton.addEventListener('click', resetGame);
             
-            // 初始化游戏
-            initializeProvinces();
-            
-            // 切换夜间模式
-            const themeToggle = document.getElementById('theme-toggle');
-            const toggleIcon = document.getElementById('toggle-icon');
-            const sun = document.getElementById('sun');
-            const moon = document.getElementById('moon');
-            const dayBg = document.getElementById('day-bg');
-            const nightBg = document.getElementById('night-bg');
-            const body = document.body;
-
-            // 计算按钮位置的辅助函数
-            const calculateTranslateX = () => {
-                const buttonWidth = themeToggle.offsetWidth;
-                const iconWidth = toggleIcon.offsetWidth;
-                const borderWidth = 2;
-                return buttonWidth - iconWidth - (borderWidth * 2);
-            };
-
-            // 应用深色模式
-            function applyDarkMode() {
-                body.classList.add('dark-mode');
-                const translateX = calculateTranslateX() - 2;
-                toggleIcon.style.transform = `translateX(${translateX}px)`;
-                setTimeout(() => {
-                    sun.style.opacity = '0';
-                    moon.style.opacity = '1';
-                }, 300);
-                dayBg.style.opacity = '0';
-                nightBg.style.opacity = '1';
-                
-                // 只切换白色背景元素到夜间模式颜色
-                document.querySelectorAll('.bg-white').forEach(el => {
-                    el.classList.remove('bg-white');
-                    el.classList.add('bg-nightBlock');
-                });
-            }
-
-            // 应用浅色模式
-            function applyLightMode() {
-                body.classList.remove('dark-mode');
-                sun.style.opacity = '1';
-                moon.style.opacity = '0';
-                setTimeout(() => {
-                    toggleIcon.style.transform = 'translateX(0)';
-                }, 100);
-                dayBg.style.opacity = '1';
-                nightBg.style.opacity = '0';
-                
-                // 恢复白色背景元素
-                document.querySelectorAll('.bg-nightBlock').forEach(el => {
-                    el.classList.remove('bg-nightBlock');
-                    el.classList.add('bg-white');
-                });
-            }
-
-            // 按钮点击事件
-            themeToggle.addEventListener('click', () => {
-                if (body.classList.contains('dark-mode')) {
-                    applyLightMode();
-                    localStorage.setItem('darkMode', 'false');
-                } else {
-                    applyDarkMode();
-                    localStorage.setItem('darkMode', 'true');
+            // 允许键盘空格控制
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    handleAction();
                 }
             });
-
-            // 检查本地存储中的主题偏好
-            const isDarkMode = localStorage.getItem('darkMode') === 'true';
-
-            // 初始化主题
-            if (isDarkMode) {
-                applyDarkMode();
-            } else {
-                toggleIcon.style.left = '2px';
+            
+            // 确保暗色模式下游戏元素样式正确
+            function applyDarkModeStyles() {
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                // 更新游戏容器背景色
+                if (isDarkMode) {
+                    gameContainer.style.backgroundColor = '#333';
+                } else {
+                    gameContainer.style.backgroundColor = '#f0f0f0';
+                }
             }
             
-            // 开始游戏倒计时
-            startCountdown();
+            // 初始化暗色模式样式
+            applyDarkModeStyles();
+            
+            // 监听暗色模式切换
+            document.getElementById('theme-toggle').addEventListener('click', applyDarkModeStyles);
+        });
+        
+        // 添加音乐切换功能
+        let audio = null;
+        function toggleMusic() {
+            // 添加音乐切换功能
+            // 如果音频对象不存在，创建它
+            if (!audio) {
+                audio = new Audio('银月的游戏咖厅.mp3');
+                audio.loop = true; // 设置音乐循环播放
+            }
+            
+            const musicIcon = document.getElementById('musicIcon');
+            if (musicIcon.classList.contains('fa-music')) {
+                musicIcon.classList.remove('fa-music');
+                musicIcon.classList.add('fa-pause');
+                // 播放音乐
+                audio.play().catch(error => {
+                    console.log('播放音乐时出错:', error);
+                });
+            } else {
+                musicIcon.classList.remove('fa-pause');
+                musicIcon.classList.add('fa-music');
+                // 暂停音乐
+                audio.pause();
+            }
+        }
+
+        // 添加夜间模式切换功能
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            const body = document.body;
+            const dayBg = document.getElementById('day-bg');
+            const nightBg = document.getElementById('night-bg');
+            const sun = document.getElementById('sun');
+            const moon = document.getElementById('moon');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            // 切换暗色模式类
+            body.classList.toggle('dark-mode');
+            
+            // 切换背景和图标
+            if (body.classList.contains('dark-mode')) {
+                dayBg.style.opacity = '0';
+                nightBg.style.opacity = '1';
+                sun.style.opacity = '0';
+                moon.style.opacity = '1';
+                toggleIcon.style.transform = 'translateX(78px)'; // 增加移动距离到78px，确保月亮完全移动到最右边
+            } else {
+                dayBg.style.opacity = '1';
+                nightBg.style.opacity = '0';
+                sun.style.opacity = '1';
+                moon.style.opacity = '0';
+                toggleIcon.style.transform = 'translateX(0)';
+            }
         });
     </script>
-            <!-- 音频播放核心组件（放在页面底部） -->
-<audio id="myAudio" src="银月的游戏咖厅.mp3" loop></audio>
-<!-- 音乐控制脚本（放在页面最底部的script中） -->
-<script>
-function toggleMusic() {
-  const audio = document.getElementById("myAudio");
-  const icon = document.getElementById("musicIcon");
-  const button = icon.parentElement;
-  
-  if (audio.paused) {
-    // 播放
-    audio.play().then(() => {
-      button.style.background = "#3b82f6";
-      icon.className = "fa fa-pause";
-      icon.style.color = "white";
-    }).catch(e => {
-      alert("播放失败: " + e.message);
-      console.log(e);
-    });
-  } else {
-    // 暂停
-    audio.pause();
-    button.style.background = "white";
-    icon.className = "fa fa-music";
-    icon.style.color = "#3b82f6";
-  }
-}
-</script>
 </body>
-
 </html>
