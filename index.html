@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -117,6 +116,13 @@ body.dark-mode .text-black {
 body.dark-mode .game-container {
     background-color: #1e1e1e;
     border-color: #444;
+}
+
+/* 夜间模式下的问题显示区域 */
+body.dark-mode #question {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: theme('colors.nightText');
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* 修改判定线样式，只保留一条线 */
@@ -253,6 +259,33 @@ body.dark-mode .control-button {
 body.dark-mode .control-button:hover {
     background-color: #ffc433;
 }
+
+/* 夜间模式下答题选项按钮样式 */
+body.dark-mode .option-btn {
+    background-color: #2d3748; /* 深灰色背景 */
+    color: theme('colors.nightText');
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .option-btn:hover {
+    background-color: #4a5568; /* 稍亮的灰色 */
+}
+
+body.dark-mode .option-btn.selected {
+    background-color: #364969; /* 选中时使用主题色 */
+    color: white;
+    border-color: theme('colors.primary');
+}
+
+body.dark-mode .option-btn.correct {
+    background-color: #38a169; /* 绿色表示正确答案 */
+    color: white;
+}
+
+body.dark-mode .option-btn.incorrect {
+    background-color: #e53e3e; /* 红色表示错误答案 */
+    color: white;
+}
 </style>
 </head>
 <body class="bg-neutral min-h-screen font-sans text-black">
@@ -312,7 +345,7 @@ body.dark-mode .control-button:hover {
         <div class="text-center mb-8">
             <p class="text-lg font-medium">开放时间</p>
             <p class="text-xs text-gray-600">Open Time</p>
-            <p class="text-sm">2025年10月10日 - 2025年12月31日</p>
+            <p class="text-sm">2026年1月10日 - 2025年2月14日</p>
         </div>
 
         <div class="max-w-md mx-auto mb-8 relative">
@@ -331,7 +364,7 @@ body.dark-mode .control-button:hover {
             <div class="grid grid-cols-1 gap-3 text-sm">
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">绑定时间：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月10日</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年1月10日</span>
               </div>
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">绑定音乐：</span>
@@ -339,7 +372,7 @@ body.dark-mode .control-button:hover {
               </div>
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">续播时间：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">2025年10月10日~2025年12月31日</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年1月10日~2025年2月14日</span>
               </div>
             </div>
           </div>
@@ -347,8 +380,8 @@ body.dark-mode .control-button:hover {
         </div>
 
         <div class="text-center mb-8">
-            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">反应力挑战 - 快速反应游戏</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">当方块接近判定线时，按下按钮得分！错过或过早按下都会受到惩罚。</p>
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">日耳曼古今见解测试</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">回答关于德国历史的问题，测试你对普鲁士王国到现代德国的了解程度！</p>
         </div>
 
         <div class="flex justify-between items-center mb-4 px-4 py-3 bg-white rounded-lg shadow-sm">
@@ -375,13 +408,22 @@ body.dark-mode .control-button:hover {
 
         <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
             <div class="game-container bg-white shadow-xl rounded-lg">
-                <!-- 将判定区改为判定线 -->
-                <div class="target-line"></div>
+                <!-- 问题显示区域 -->
+                <div class="h-full flex flex-col p-4">
+                    <div id="question" class="text-lg font-medium mb-4 p-4 text-center min-h-[60px] flex items-center justify-center">
+                        点击开始游戏以开始答题
+                    </div>
+                    <div id="options" class="grid grid-cols-1 gap-3 p-4">
+                        <!-- 选项将通过JavaScript动态生成 -->
+                    </div>
+                </div>
                 <!-- 游戏结束遮罩 -->
                 <div id="game-over-overlay" class="game-over-overlay">
                     <div class="game-over-content">
                         <h3 class="text-xl font-bold">游戏结束</h3>
-                        <p class="game-over-score">您的得分为 <span id="final-score">0</span></p>
+                        <p class="text-gray-700 dark:text-gray-300 mb-2">您的得分: <span id="final-score">0</span></p>
+                        <p class="text-gray-700 dark:text-gray-300 mb-2">正确答案数: <span id="correct-answers">0</span>/<span id="total-questions">0</span></p>
+                        <p class="text-gray-700 dark:text-gray-300">准确率: <span id="accuracy-rate">0</span>%</p>
                         <button id="play-again-btn" class="restart-button">
                             <i class="fa fa-refresh mr-2"></i> 重新再来
                         </button>
@@ -402,16 +444,16 @@ body.dark-mode .control-button:hover {
                 <div class="mb-4">
                     <h4 class="font-medium mb-2">游戏规则</h4>
                     <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• 方块会从顶部随机位置落下</li>
-                        <li>• 当方块接近红色判定线时，按下按钮得分</li>
-                        <li>• 过早或过晚按下按钮不得分</li>
-                        <li>• 方块超过判定线未被按到，扣除一条命</li>
+                        <li>• 系统会随机显示德国历史相关问题</li>
+                        <li>• 从四个选项中选择一个正确答案</li>
+                        <li>• 答错会扣除一条命</li>
                         <li>• 共有3条命，用完游戏结束</li>
+                        <li>• 答对题目可获得分数</li>
                     </ul>
                 </div>
                 
                 <div class="mt-6">
-                    <button id="action-btn" class="control-button w-full" disabled>
+                    <button id="action-btn" class="control-button w-full" disabled style="display:none;">
                         <i class="fa fa-hand-pointer-o mr-2"></i> 点击判定
                     </button>
                 </div>
@@ -436,30 +478,157 @@ body.dark-mode .control-button:hover {
                 </div>
             </div>
             <div class="mt-6 pt-4 border-t border-white/20 text-center text-sm text-white/70">
-                <p>© 2025 银月的游戏咖厅</p>
+                <p>© 2025-2026 银月的游戏咖厅</p>
             </div>
         </div>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // 德国历史题目数据
+            const questions = [
+                {
+                    question: "普鲁士王国的第一位国王是谁？",
+                    options: ["腓特烈·威廉一世", "腓特烈一世", "腓特烈大帝", "腓特烈·威廉三世"],
+                    answer: 1
+                },
+                {
+                    question: "哪位普鲁士国王被称为'腓特烈大帝'？",
+                    options: ["腓特烈一世", "腓特烈·威廉一世", "腓特烈二世", "腓特烈三世"],
+                    answer: 2
+                },
+                {
+                    question: "普鲁士在哪个战争中崛起为欧洲大国？",
+                    options: ["三十年战争", "七年战争", "拿破仑战争", "普法战争"],
+                    answer: 1
+                },
+                {
+                    question: "德意志帝国成立于哪一年？",
+                    options: ["1867年", "1871年", "1875年", "1880年"],
+                    answer: 1
+                },
+                {
+                    question: "谁是德意志帝国的第一任宰相？",
+                    options: ["俾斯麦", "毛奇", "罗恩", "威廉一世"],
+                    answer: 0
+                },
+                {
+                    question: "第一次世界大战德国战败后签订了哪个条约？",
+                    options: ["凡尔赛条约", "布列斯特-立陶夫斯克条约", "圣日耳曼条约", "纳伊条约"],
+                    answer: 0
+                },
+                {
+                    question: "魏玛共和国成立于哪一年？",
+                    options: ["1918年", "1919年", "1920年", "1921年"],
+                    answer: 1
+                },
+                {
+                    question: "希特勒于哪一年成为德国总理？",
+                    options: ["1932年", "1933年", "1934年", "1935年"],
+                    answer: 1
+                },
+                {
+                    question: "纳粹党在德语中的全称是什么？",
+                    options: ["国家社会主义党", "德国工人党", "国家社会主义德国工人党", "民族社会主义党"],
+                    answer: 2
+                },
+                {
+                    question: "第二次世界大战欧洲战场以德国投降告终是在哪一年？",
+                    options: ["1944年", "1945年", "1946年", "1947年"],
+                    answer: 1
+                },
+                {
+                    question: "柏林墙是在哪一年开始建造的？",
+                    options: ["1959年", "1961年", "1963年", "1965年"],
+                    answer: 1
+                },
+                {
+                    question: "东西德统一是在哪一年？",
+                    options: ["1989年", "1990年", "1991年", "1992年"],
+                    answer: 1
+                },
+                {
+                    question: "德国统一后的首都是哪里？",
+                    options: ["汉堡", "慕尼黑", "柏林", "法兰克福"],
+                    answer: 2
+                },
+                {
+                    question: "德国的《基本法》（宪法）是在哪一年制定的？",
+                    options: ["1948年", "1949年", "1950年", "1951年"],
+                    answer: 1
+                },
+                {
+                    question: "普鲁士王国的首都最初是哪里？",
+                    options: ["柏林", "波茨坦", "柯尼斯堡", "德累斯顿"],
+                    answer: 0
+                },
+                {
+                    question: "德意志帝国的皇帝被称为？",
+                    options: ["凯撒", "沙皇", "德皇", "皇帝"],
+                    answer: 0
+                },
+                {
+                    question: "哪位普鲁士国王主持了铁血演说？",
+                    options: ["腓特烈大帝", "威廉一世", "俾斯麦", "威廉二世"],
+                    answer: 2
+                },
+                {
+                    question: "第一次世界大战爆发的直接导火索是什么事件？",
+                    options: ["萨拉热窝事件", "七月危机", "奥匈帝国对塞尔维亚宣战", "德国对俄国宣战"],
+                    answer: 0
+                },
+                {
+                    question: "魏玛共和国得名于？",
+                    options: ["一个政治党派", "制宪会议召开的地点", "宪法签署的日期", "一位政治家的名字"],
+                    answer: 1
+                },
+                {
+                    question: "希特勒在啤酒馆政变失败后被监禁期间写了哪本书？",
+                    options: ["《我的奋斗》", "《德意志民族》", "《国家社会主义》", "《德国复兴》"],
+                    answer: 0
+                },
+                {
+                    question: "第二次世界大战中德国入侵苏联的行动代号是什么？",
+                    options: ["巴巴罗萨计划", "海狮计划", "闪电计划", "台风计划"],
+                    answer: 0
+                },
+                {
+                    question: "冷战时期，德国分裂为哪两个国家？",
+                    options: ["东德和西德", "联邦德国和民主德国", "德意志联邦共和国和德意志民主共和国", "以上都是"],
+                    answer: 3
+                },
+                {
+                    question: "柏林墙倒塌发生在哪一年？",
+                    options: ["1988年", "1989年", "1990年", "1991年"],
+                    answer: 1
+                },
+                {
+                    question: "德国联邦总理的官邸位于哪里？",
+                    options: ["柏林", "波恩", "慕尼黑", "汉堡"],
+                    answer: 0
+                },
+                {
+                    question: "德国统一后，原东德地区被称为？",
+                    options: ["新联邦州", "东部地区", "前民主德国", "东德州"],
+                    answer: 0
+                }
+            ];
+            
             // 游戏常量
-            const GAME_HEIGHT = 500;
-            const BLOCK_SIZE = 50;
-            // 获取判定线的实际位置（从CSS中获取）
-            const targetLine = document.querySelector('.target-line');
-            const TARGET_LINE_TOP = parseInt(window.getComputedStyle(targetLine).top);
-            const FALL_SPEED = 5; // 方块下落速度（中快）
             const MAX_LIVES = 3;
-            const NEAR_TARGET_RANGE = 80; // 接近判定线的范围
             
             // 游戏状态
             let score = 0;
             let lives = MAX_LIVES;
             let gameActive = false; // 初始状态设置为未开始
-            let fallingBlocks = [];
-            let gameLoop;
-            let blockSpawnTimer;
+            let currentQuestionIndex = 0;
+            let currentQuestion = null;
+            let answered = false;
+            let answeredCorrectly = false;
+            let questionsUsed = [];
+            let totalQuestionsAnswered = 0; // 总答题数
+            let correctAnswers = 0;         // 正确答案数
+            let gameLoop;                   // 游戏循环（保留以避免错误，但不再使用）
             
             // DOM元素
             const gameContainer = document.querySelector('.game-container');
@@ -472,6 +641,8 @@ body.dark-mode .control-button:hover {
             const livesContainer = document.getElementById('lives-container');
             const gameOverOverlay = document.getElementById('game-over-overlay');
             const finalScoreElement = document.getElementById('final-score');
+            const questionElement = document.getElementById('question');
+            const optionsContainer = document.getElementById('options');
             
             // 开始游戏
             function startGame() {
@@ -479,47 +650,43 @@ body.dark-mode .control-button:hover {
                 score = 0;
                 lives = MAX_LIVES;
                 gameActive = true;
-                fallingBlocks = [];
-                
-                // 清空游戏容器
-                while (gameContainer.children.length > 2) { // 保留判定线和结束遮罩
-                    gameContainer.removeChild(gameContainer.lastChild);
-                }
+                questionsUsed = [];
+                answered = false;
+                answeredCorrectly = false;
                 
                 // 更新UI
                 updateScore();
                 updateLives();
                 gameStatusElement.textContent = `当前分数: ${score}`;
-                actionButton.disabled = false;
+                actionButton.disabled = true;
                 startButton.disabled = true;
                 
                 // 隐藏游戏结束遮罩
                 gameOverOverlay.classList.remove('active');
                 
-                // 开始生成方块
-                startSpawningBlocks();
+                // 重置统计信息显示
+                updateStats();
                 
-                // 开始游戏循环
-                if (gameLoop) clearInterval(gameLoop);
-                gameLoop = setInterval(updateGame, 20);
+                // 重置统计信息显示
+                updateStats();
+                
+                // 显示第一题
+                showNextQuestion();
             }
             
             // 重新开始（重置后默认暂停）
             function resetGame() {
                 // 停止游戏
                 gameActive = false;
-                clearInterval(gameLoop);
-                clearInterval(blockSpawnTimer);
                 
                 // 重置游戏状态
                 score = 0;
                 lives = MAX_LIVES;
-                fallingBlocks = [];
-                
-                // 清空游戏容器
-                while (gameContainer.children.length > 2) { // 保留判定线和结束遮罩
-                    gameContainer.removeChild(gameContainer.lastChild);
-                }
+                questionsUsed = [];
+                answered = false;
+                answeredCorrectly = false;
+                totalQuestionsAnswered = 0;
+                correctAnswers = 0;
                 
                 // 更新UI为暂停状态
                 updateScore();
@@ -528,148 +695,116 @@ body.dark-mode .control-button:hover {
                 actionButton.disabled = true;
                 startButton.disabled = false;
                 
+                // 清空问题显示区域
+                const questionElement = document.getElementById('question');
+                const optionsContainer = document.getElementById('options');
+                questionElement.textContent = '点击开始游戏以开始答题';
+                optionsContainer.innerHTML = '';
+                
                 // 隐藏游戏结束遮罩
                 gameOverOverlay.classList.remove('active');
+                
+                // 重置统计信息显示
+                updateStats();
             }
             
-            // 生成方块
-            function spawnBlock() {
+            // 显示下一题
+            function showNextQuestion() {
                 if (!gameActive) return;
                 
-                // 随机水平位置
-                const maxX = gameContainer.clientWidth - BLOCK_SIZE;
-                const x = Math.floor(Math.random() * maxX);
-                
-                // 创建方块元素
-                const block = document.createElement('div');
-                block.className = 'falling-block';
-                block.style.left = `${x}px`;
-                block.style.top = '-50px'; // 从容器顶部外开始
-                block.dataset.x = x;
-                block.dataset.y = -50;
-                
-                gameContainer.appendChild(block);
-                fallingBlocks.push(block);
-            }
-            
-            // 开始生成方块计时器
-            function startSpawningBlocks() {
-                // 清除之前的计时器，防止多次启动
-                if (blockSpawnTimer) clearInterval(blockSpawnTimer);
-                
-                // 立即生成一个方块
-                spawnBlock();
-                
-                // 之后不是固定时间生成，而是在方块被移除后再生成新的方块
-                // 移除固定的计时器
+                // 检查是否还有未使用的问题
+                if (questionsUsed.length >= questions.length) {
+                    // 如果所有问题都用完了，重新开始
+                    questionsUsed = [];
                 }
                 
-                // 生成新方块的函数（在当前方块被处理后调用）
-                function spawnNextBlock() {
+                // 随机选择一个未使用过的问题
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * questions.length);
+                } while (questionsUsed.includes(randomIndex));
+                
+                questionsUsed.push(randomIndex);
+                currentQuestion = questions[randomIndex];
+                currentQuestionIndex = randomIndex;
+                
+                // 显示问题和选项
+                displayQuestion(currentQuestion);
+            }
+            
+            // 显示问题和选项
+            function displayQuestion(questionObj) {
+                const questionElement = document.getElementById('question');
+                const optionsContainer = document.getElementById('options');
+                
+                questionElement.textContent = questionObj.question;
+                
+                // 清空选项容器
+                optionsContainer.innerHTML = '';
+                
+                // 创建选项按钮
+                questionObj.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'w-full bg-gray-100 hover:bg-gray-200 text-left p-3 rounded-lg transition-colors duration-200 option-btn border border-transparent';
+                    button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                    button.onclick = () => selectOption(index);
+                    optionsContainer.appendChild(button);
+                });
+                
+                answered = false;
+            }
+            
+            // 选择选项
+            function selectOption(selectedIndex) {
+                if (answered || !gameActive) return;
+                
+                answered = true;
+                
+                const optionsContainer = document.getElementById('options');
+                const optionButtons = optionsContainer.querySelectorAll('.option-btn');
+                
+                // 检查答案是否正确
+                const isCorrect = selectedIndex === currentQuestion.answer;
+                
+                // 高亮选中的选项
+                optionButtons[selectedIndex].classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                if (isCorrect) {
+                    optionButtons[selectedIndex].classList.add('bg-green-500', 'text-white');
+                } else {
+                    optionButtons[selectedIndex].classList.add('bg-red-500', 'text-white');
+                }
+                
+                // 高亮正确答案
+                if (!isCorrect) {
+                    optionButtons[currentQuestion.answer].classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                    optionButtons[currentQuestion.answer].classList.add('bg-green-500', 'text-white');
+                }
+                
+                // 记录答题统计
+                totalQuestionsAnswered++;
+                if (isCorrect) {
+                    // 答对了加分
+                    score += 10;
+                    updateScore();
+                    gameStatusElement.textContent = `正确! +10分`;
+                    answeredCorrectly = true;
+                    correctAnswers++;
+                } else {
+                    // 答错了扣生命值
+                    loseLife();
+                    gameStatusElement.textContent = `错误! 正确答案是: ${currentQuestion.options[currentQuestion.answer]}`;
+                    answeredCorrectly = false;
+                }
+                
+                // 实时更新统计信息
+                updateStats();
+                
+                // 短暂延迟后显示下一题
+                setTimeout(() => {
                     if (gameActive) {
-                        // 延迟一小段时间再生成下一个方块，给玩家一些准备时间
-                        setTimeout(() => {
-                            if (gameActive) {
-                                spawnBlock();
-                            }
-                        }, 1000); // 1秒延迟
+                        showNextQuestion();
                     }
-                }
-                
-                // 游戏主循环
-                function updateGame() {
-                    if (!gameActive) return;
-                    
-                    // 更新所有方块位置
-                    for (let i = fallingBlocks.length - 1; i >= 0; i--) {
-                        const block = fallingBlocks[i];
-                        let y = parseInt(block.dataset.y);
-                        y += FALL_SPEED;
-                        block.dataset.y = y;
-                        block.style.transform = `translateY(${y}px)`;
-                        
-                        // 检查方块是否接近判定线，添加视觉反馈
-                        const isNearTarget = y + BLOCK_SIZE > TARGET_LINE_TOP - NEAR_TARGET_RANGE && y < TARGET_LINE_TOP + BLOCK_SIZE;
-                        if (isNearTarget) {
-                            block.classList.add('near-target');
-                        } else {
-                            block.classList.remove('near-target');
-                        }
-                        
-                        // 检查方块是否已超过判定线 - 符合要求：超过判定线位置才消失扣血
-                        if (y > TARGET_LINE_TOP + BLOCK_SIZE / 2) {
-                            // 方块已超过判定线，扣生命值
-                            loseLife();
-                            // 清空所有方块
-                            clearAllBlocks();
-                            // 生成下一个方块
-                            spawnNextBlock();
-                            break;
-                        } else if (y > GAME_HEIGHT) {
-                            // 方块已经完全移出游戏区域，直接移除不扣血
-                            removeBlock(block, i);
-                            // 生成下一个方块
-                            spawnNextBlock();
-                        }
-                    }
-                }
-                
-                // 处理按钮点击
-                function handleAction() {
-                    if (!gameActive) return;
-                    
-                    let scored = false;
-                    
-                    // 检查是否有方块接近判定线
-                    for (let i = fallingBlocks.length - 1; i >= 0; i--) {
-                        const block = fallingBlocks[i];
-                        const y = parseInt(block.dataset.y);
-                        
-                        // 检查方块是否在判定线附近的有效区域内
-                        if (y + BLOCK_SIZE > TARGET_LINE_TOP - NEAR_TARGET_RANGE && y < TARGET_LINE_TOP + BLOCK_SIZE) {
-                            // 得分
-                            score += 10;
-                            updateScore();
-                            scored = true;
-                            
-                            // 添加得分视觉反馈
-                            block.style.backgroundColor = '#FFD166';
-                            setTimeout(() => {
-                                removeBlock(block, i);
-                                // 生成下一个方块
-                                spawnNextBlock();
-                            }, 100);
-                            break;
-                        }
-                    }
-                    
-                    // 如果没得分，说明过早或过晚点击
-                    if (!scored) {
-                        // 添加错误反馈，比如按钮闪烁
-                        actionButton.style.backgroundColor = '#ff6b6b';
-                        setTimeout(() => {
-                            actionButton.style.backgroundColor = '';
-                        }, 200);
-                    }
-                }
-            
-            // 移除方块
-            function removeBlock(block, index) {
-                if (block && block.parentNode === gameContainer) {
-                    gameContainer.removeChild(block);
-                }
-                if (index >= 0 && index < fallingBlocks.length) {
-                    fallingBlocks.splice(index, 1);
-                }
-            }
-            
-            // 清除所有方块
-            function clearAllBlocks() {
-                // 清空游戏容器
-                while (gameContainer.children.length > 2) { // 保留判定线和结束遮罩
-                    gameContainer.removeChild(gameContainer.lastChild);
-                }
-                fallingBlocks = [];
+                }, 1500);
             }
             
             // 扣除生命值
@@ -704,36 +839,40 @@ body.dark-mode .control-button:hover {
                 gameStatusElement.textContent = `当前分数: ${score}`;
             }
             
+            // 更新统计信息显示
+            const TOTAL_QUESTIONS = 25; // 总题数
+            
+            function updateStats() {
+                // 计算准确率基于总题数
+                const accuracyRate = TOTAL_QUESTIONS > 0 ? Math.round((correctAnswers / TOTAL_QUESTIONS) * 100) : 0;
+                
+                // 更新统计数据显示 - 显示当前答对数量/总题数25
+                document.getElementById('correct-answers').textContent = correctAnswers;
+                document.getElementById('total-questions').textContent = TOTAL_QUESTIONS; // 固定显示为25
+                document.getElementById('accuracy-rate').textContent = accuracyRate;
+            }
+            
             // 结束游戏
             function endGame() {
                 gameActive = false;
-                clearInterval(gameLoop);
-                clearInterval(blockSpawnTimer);
                 
-                // 显示最终得分在遮罩上
+                // 显示最终得分和统计信息
                 finalScoreElement.textContent = score;
+                
+                // 使用统一的统计更新函数
+                updateStats();
                 
                 // 显示游戏结束遮罩
                 gameOverOverlay.classList.add('active');
                 
-                // 禁用开始按钮和判定按钮
+                // 禁用开始按钮
                 startButton.disabled = false;
-                actionButton.disabled = true;
             }
             
             // 事件监听
-            actionButton.addEventListener('click', handleAction);
             startButton.addEventListener('click', startGame);
             restartButton.addEventListener('click', resetGame);
             playAgainButton.addEventListener('click', resetGame);
-            
-            // 允许键盘空格控制
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space') {
-                    e.preventDefault();
-                    handleAction();
-                }
-            });
             
             // 确保暗色模式下游戏元素样式正确
             function applyDarkModeStyles() {
@@ -798,7 +937,7 @@ body.dark-mode .control-button:hover {
                 nightBg.style.opacity = '1';
                 sun.style.opacity = '0';
                 moon.style.opacity = '1';
-                toggleIcon.style.transform = 'translateX(78px)'; // 增加移动距离到78px，确保月亮完全移动到最右边
+                toggleIcon.style.transform = 'translateX(78px)'; // 增加移动距离到30px，确保月亮完全移动到最右边
             } else {
                 dayBg.style.opacity = '1';
                 nightBg.style.opacity = '0';
