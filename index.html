@@ -625,10 +625,24 @@ body.dark-mode .option-btn.incorrect {
             let currentQuestion = null;
             let answered = false;
             let answeredCorrectly = false;
-            let questionsUsed = [];
+            let questionsUsed = [];         // 已使用题目索引
+            let selectedQuestions = [];     // 本次游戏的25道题目索引
+            let currentQuestionIndexInSet = 0; // 当前题目在25题集合中的位置
             let totalQuestionsAnswered = 0; // 总答题数
             let correctAnswers = 0;         // 正确答案数
             let gameLoop;                   // 游戏循环（保留以避免错误，但不再使用）
+            
+            // 从所有题目中随机选择指定数量的不重复题目
+            function getRandomQuestions(count) {
+                const allIndices = Array.from({length: questions.length}, (_, i) => i);
+                // 打乱数组顺序
+                for (let i = allIndices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allIndices[i], allIndices[j]] = [allIndices[j], allIndices[i]];
+                }
+                // 返回指定数量的题目索引
+                return allIndices.slice(0, Math.min(count, questions.length));
+            }
             
             // DOM元素
             const gameContainer = document.querySelector('.game-container');
@@ -651,21 +665,23 @@ body.dark-mode .option-btn.incorrect {
                 lives = MAX_LIVES;
                 gameActive = true;
                 questionsUsed = [];
+                selectedQuestions = [];       // 重新选择本次游戏的题目
+                currentQuestionIndexInSet = 0; // 重置当前题目索引
                 answered = false;
                 answeredCorrectly = false;
+                
+                // 随机选择25道不重复的题目
+                selectedQuestions = getRandomQuestions(25);
                 
                 // 更新UI
                 updateScore();
                 updateLives();
-                gameStatusElement.textContent = `当前分数: ${score}`;
+                gameStatusElement.textContent = `当前分数: ${score} | 第${currentQuestionIndexInSet + 1}/25题`;
                 actionButton.disabled = true;
                 startButton.disabled = true;
                 
                 // 隐藏游戏结束遮罩
                 gameOverOverlay.classList.remove('active');
-                
-                // 重置统计信息显示
-                updateStats();
                 
                 // 重置统计信息显示
                 updateStats();
@@ -683,6 +699,8 @@ body.dark-mode .option-btn.incorrect {
                 score = 0;
                 lives = MAX_LIVES;
                 questionsUsed = [];
+                selectedQuestions = [];
+                currentQuestionIndexInSet = 0;
                 answered = false;
                 answeredCorrectly = false;
                 totalQuestionsAnswered = 0;
@@ -712,24 +730,24 @@ body.dark-mode .option-btn.incorrect {
             function showNextQuestion() {
                 if (!gameActive) return;
                 
-                // 检查是否还有未使用的问题
-                if (questionsUsed.length >= questions.length) {
-                    // 如果所有问题都用完了，重新开始
-                    questionsUsed = [];
+                // 检查是否已经回答了25道题
+                if (currentQuestionIndexInSet >= selectedQuestions.length) {
+                    // 所有25道题都已完成，结束游戏
+                    endGame();
+                    return;
                 }
                 
-                // 随机选择一个未使用过的问题
-                let randomIndex;
-                do {
-                    randomIndex = Math.floor(Math.random() * questions.length);
-                } while (questionsUsed.includes(randomIndex));
+                // 获取当前要显示的题目索引
+                const questionIndex = selectedQuestions[currentQuestionIndexInSet];
                 
-                questionsUsed.push(randomIndex);
-                currentQuestion = questions[randomIndex];
-                currentQuestionIndex = randomIndex;
+                currentQuestion = questions[questionIndex];
+                currentQuestionIndex = questionIndex;
                 
                 // 显示问题和选项
                 displayQuestion(currentQuestion);
+                
+                // 更新状态显示
+                gameStatusElement.textContent = `当前分数: ${score} | 第${currentQuestionIndexInSet + 1}/25题`;
             }
             
             // 显示问题和选项
@@ -799,6 +817,9 @@ body.dark-mode .option-btn.incorrect {
                 // 实时更新统计信息
                 updateStats();
                 
+                // 增加当前题目索引，准备下一题
+                currentQuestionIndexInSet++;
+                
                 // 短暂延迟后显示下一题
                 setTimeout(() => {
                     if (gameActive) {
@@ -852,7 +873,7 @@ body.dark-mode .option-btn.incorrect {
                 document.getElementById('accuracy-rate').textContent = accuracyRate;
             }
             
-            // 结束游戏
+            // 确保在游戏结束时也调用一次更新统计的函数
             function endGame() {
                 gameActive = false;
                 
@@ -862,10 +883,17 @@ body.dark-mode .option-btn.incorrect {
                 // 使用统一的统计更新函数
                 updateStats();
                 
+                // 根据游戏结束原因显示不同信息
+                if (lives <= 0) {
+                    gameStatusElement.textContent = `游戏结束！生命耗尽`;
+                } else if (currentQuestionIndexInSet >= 25) {
+                    gameStatusElement.textContent = `恭喜完成全部25道题目！`;
+                }
+                
                 // 显示游戏结束遮罩
                 gameOverOverlay.classList.add('active');
                 
-                // 禁用开始按钮
+                // 启用开始按钮（允许重新开始）
                 startButton.disabled = false;
             }
             
@@ -949,4 +977,3 @@ body.dark-mode .option-btn.incorrect {
     </script>
 </body>
 </html>
-
