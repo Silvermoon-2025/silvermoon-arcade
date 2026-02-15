@@ -101,66 +101,6 @@ body.dark-mode .text-black {
     color: theme('colors.nightText');
 }
 
-/* 反应游戏样式 */
-.game-container {
-    position: relative;
-    width: 100%;
-    height: 500px;
-    border: 2px solid #333;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #f0f0f0;
-}
-
-/* 夜间模式下的游戏容器背景 */
-body.dark-mode .game-container {
-    background-color: #1e1e1e;
-    border-color: #444;
-}
-
-/* 夜间模式下的问题显示区域 */
-body.dark-mode #question {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: theme('colors.nightText');
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 修改判定线样式，只保留一条线 */
-.target-line {
-    position: absolute;
-    height: 4px;
-    width: 100%;
-    top: 70%;
-    background-color: #ff3e3e;
-    z-index: 10;
-    box-shadow: 0 0 10px rgba(255, 62, 62, 0.7);
-}
-
-.falling-block {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: #165DFF;
-    border-radius: 4px;
-    transition: transform 0.1s linear;
-}
-
-/* 夜间模式下方块样式 */
-body.dark-mode .falling-block {
-    background-color: theme('colors.nightBlock');
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* 方块接近判定线时的视觉反馈 */
-.falling-block.near-target {
-    background-color: #4CAF50;
-}
-
-/* 夜间模式下方块接近判定线的视觉反馈 */
-body.dark-mode .falling-block.near-target {
-    background-color: #388E3C;
-}
-
 .control-button {
     background-color: #FFD166;
     color: #165DFF;
@@ -260,31 +200,319 @@ body.dark-mode .control-button:hover {
     background-color: #ffc433;
 }
 
-/* 夜间模式下答题选项按钮样式 */
-body.dark-mode .option-btn {
-    background-color: #2d3748; /* 深灰色背景 */
-    color: theme('colors.nightText');
+
+
+/* 抢红包游戏样式 */
+.game-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 夜间模式下游戏区域背景样式 */
+body.dark-mode .game-container {
+    background-color: theme('colors.nightBlock');
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-body.dark-mode .option-btn:hover {
-    background-color: #4a5568; /* 稍亮的灰色 */
+.red-packet {
+    width: 220px;
+    height: 260px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b, #e67e22);
+    border-radius: 15px;
+    margin: 0 auto 30px;
+    position: relative;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 -5px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.1s;
+    animation: float 3s ease-in-out infinite;
 }
 
-body.dark-mode .option-btn.selected {
-    background-color: #364969; /* 选中时使用主题色 */
-    color: white;
-    border-color: theme('colors.primary');
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
 
-body.dark-mode .option-btn.correct {
-    background-color: #38a169; /* 绿色表示正确答案 */
-    color: white;
+.red-packet:active {
+    transform: scale(0.95);
 }
 
-body.dark-mode .option-btn.incorrect {
-    background-color: #e53e3e; /* 红色表示错误答案 */
+.packet-top {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+    height: 65px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-radius: 50% 50% 0 0;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+}
+
+.packet-text {
+    color: gold;
+    font-size: 48px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: 
+        0 0 10px rgba(255,215,0,0.8),
+        0 0 20px rgba(255,215,0,0.6),
+        0 0 30px rgba(255,215,0,0.4);
+    letter-spacing: 2px;
+}
+
+.grab-btn {
+    width: 180px;
+    height: 60px;
+    background: linear-gradient(135deg, #f39c12, #e74c3c, #c0392b);
+    border: none;
+    border-radius: 30px;
     color: white;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    transition: all 0.1s;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+}
+
+.grab-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent, transparent, 
+        rgba(255,255,255,0.3), 
+        transparent, transparent
+    );
+    transform: rotate(45deg);
+    transition: all 0.5s;
+}
+
+.grab-btn:hover::before {
+    animation: shine 1s;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%); }
+    100% { transform: translateX(100%) translateY(100%); }
+}
+
+.grab-btn:active {
+    transform: scale(0.95);
+    background: linear-gradient(135deg, #e67e22, #d35400, #a52a2a);
+}
+
+.grab-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.timer {
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 20px;
+    text-shadow: 
+        2px 2px 4px rgba(0,0,0,0.5),
+        0 0 10px rgba(255,215,0,0.5);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.result-modal {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 350px;
+    box-shadow: 
+        0 0 30px rgba(231, 76, 60, 0.7),
+        0 0 60px rgba(231, 76, 60, 0.5),
+        inset 0 0 20px rgba(0,0,0,0.3);
+    border: 3px solid gold;
+    position: relative;
+    overflow: hidden;
+    animation: modalAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalAppear {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.result-modal::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);
+    animation: rotate 8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.firecracker {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    animation: bounce 0.5s infinite alternate;
+}
+
+.firecracker-right {
+    top: 10px;
+    right: 10px;
+    left: auto;
+    animation-delay: 0.2s;
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0px) rotate(-10deg); }
+    100% { transform: translateY(-10px) rotate(10deg); }
+}
+
+.result-title {
+    font-size: 32px;
+    color: gold;
+    margin-bottom: 25px;
+    font-weight: bold;
+    text-shadow: 
+        0 0 10px rgba(255,215,0,0.8),
+        0 0 20px rgba(255,215,0,0.6);
+    letter-spacing: 2px;
+}
+
+.result-amount {
+    font-size: 48px;
+    color: gold;
+    font-weight: bold;
+    margin: 20px 0;
+    text-shadow: 
+        0 0 15px rgba(255,215,0,0.8),
+        0 0 30px rgba(255,215,0,0.6);
+    animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+    0% { text-shadow: 0 0 10px rgba(255,215,0,0.8); }
+    100% { text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 30px rgba(255,215,0,0.8); }
+}
+
+.result-message {
+    font-size: 18px;
+    color: #fff;
+    margin: 15px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.result-message-low {
+    font-size: 18px;
+    color: #fff;
+    margin: 15px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    color: #f1c40f;
+    font-weight: bold;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.result-clicks {
+    font-size: 20px;
+    color: #fff;
+    margin: 20px 0;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.retry-btn {
+    width: 150px;
+    height: 50px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s;
+}
+
+.retry-btn:hover {
+    background: linear-gradient(135deg, #27ae60, #219653);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f39c12;
+    border-radius: 50%;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 脉冲红动画 */
+@keyframes pulseRed {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 </style>
 </head>
@@ -345,7 +573,7 @@ body.dark-mode .option-btn.incorrect {
         <div class="text-center mb-8">
             <p class="text-lg font-medium">开放时间</p>
             <p class="text-xs text-gray-600">Open Time</p>
-            <p class="text-sm">2026年1月10日 - 2025年2月14日</p>
+            <p class="text-sm">2026年2月15日 - 2026年2月23日</p>
         </div>
 
         <div class="max-w-md mx-auto mb-8 relative">
@@ -364,15 +592,15 @@ body.dark-mode .option-btn.incorrect {
             <div class="grid grid-cols-1 gap-3 text-sm">
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">绑定时间：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年1月10日</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年2月15日</span>
               </div>
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">绑定音乐：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">德意志之歌 (德意志联邦共和国国歌) - 德意志联邦共和国</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">恭喜发财 - 刘德华</span>
               </div>
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">续播时间：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年1月10日~2025年2月14日</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年2月15日~2026年2月23日</span>
               </div>
             </div>
           </div>
@@ -380,22 +608,15 @@ body.dark-mode .option-btn.incorrect {
         </div>
 
         <div class="text-center mb-8">
-            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">日耳曼古今见解测试</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">回答关于德国历史的问题，测试你对普鲁士王国到现代德国的了解程度！</p>
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">春节小游戏·至金豪夺</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">拼手速抢红包，在此检验你的手速到底有多快吧！</p>
         </div>
 
         <div class="flex justify-between items-center mb-4 px-4 py-3 bg-white rounded-lg shadow-sm">
             <div class="flex items-center">
-                <span id="game-status" class="font-medium">点击开始游戏</span>
+                <span id="game-status" class="font-medium">点击[开始游戏]，即可进入抢红包环节</span>
             </div>
-            <div class="flex items-center">
-                <span class="mr-2">生命:</span>
-                <div id="lives-container">
-                    <i class="fa fa-heart life-icon"></i>
-                    <i class="fa fa-heart life-icon"></i>
-                    <i class="fa fa-heart life-icon"></i>
-                </div>
-            </div>
+
             <div class="flex space-x-2">
                 <button id="start-btn" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center">
                     <i class="fa fa-play mr-2"></i> 开始游戏
@@ -407,56 +628,59 @@ body.dark-mode .option-btn.incorrect {
         </div>
 
         <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
-            <div class="game-container bg-white shadow-xl rounded-lg">
-                <!-- 问题显示区域 -->
-                <div class="h-full flex flex-col p-4">
-                    <div id="question" class="text-lg font-medium mb-4 p-4 text-center min-h-[60px] flex items-center justify-center">
-                        点击开始游戏以开始答题
-                    </div>
-                    <div id="options" class="grid grid-cols-1 gap-3 p-4">
-                        <!-- 选项将通过JavaScript动态生成 -->
-                    </div>
+            <div class="game-container bg-white shadow-xl rounded-lg p-6">
+                <div class="timer">⏱️ <span id="time-left">15</span>s</div>
+                
+                <div class="red-packet" id="red-packet">
+                    <div class="packet-top"></div>
+                    <div class="packet-text">福</div>
                 </div>
-                <!-- 游戏结束遮罩 -->
-                <div id="game-over-overlay" class="game-over-overlay">
-                    <div class="game-over-content">
-                        <h3 class="text-xl font-bold">游戏结束</h3>
-                        <p class="text-gray-700 dark:text-gray-300 mb-2">您的得分: <span id="final-score">0</span></p>
-                        <p class="text-gray-700 dark:text-gray-300 mb-2">正确答案数: <span id="correct-answers">0</span>/<span id="total-questions">0</span></p>
-                        <p class="text-gray-700 dark:text-gray-300">准确率: <span id="accuracy-rate">0</span>%</p>
-                        <button id="play-again-btn" class="restart-button">
-                            <i class="fa fa-refresh mr-2"></i> 重新再来
-                        </button>
-                    </div>
-                </div>
+                
+                <button class="grab-btn" id="grab-btn">抢红包</button>
             </div>
 
             <div class="w-full md:w-64 bg-white rounded-lg shadow-lg p-4">
                 <h3 class="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">游戏信息</h3>
                 
                 <div class="mb-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">当前分数</span>
-                        <span id="score" class="font-medium">0</span>
-                    </div>
+                    <h4 class="font-medium mb-2">游戏规则</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• 点击开始按钮后，在15秒内尽可能多地点击红包</li>
+                        <li>• 时间结束后会显示您抢到的金额</li>
+                        <li>• 可以通过点击红包或按钮来增加点击次数</li>
+                        <li>• 游戏结束后可以选择再抢一次</li>
+                    </ul>
                 </div>
                 
                 <div class="mb-4">
-                    <h4 class="font-medium mb-2">游戏规则</h4>
+                    <h4 class="font-medium mb-2">概率说明</h4>
                     <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• 系统会随机显示德国历史相关问题</li>
-                        <li>• 从四个选项中选择一个正确答案</li>
-                        <li>• 答错会扣除一条命</li>
-                        <li>• 共有3条命，用完游戏结束</li>
-                        <li>• 答对题目可获得分数</li>
+                        <li>• 金额上限为1000元</li>
+                        <li>• 有20%可能抢到500元以上金额</li>
+                        <li>• 有5%的可能抢到900元以上金额</li>
+                        <li>• 剩下的35%就是抢到100以上500以下之间金额的可能</li>
                     </ul>
                 </div>
                 
                 <div class="mt-6">
-                    <button id="action-btn" class="control-button w-full" disabled style="display:none;">
-                        <i class="fa fa-hand-pointer-o mr-2"></i> 点击判定
-                    </button>
+                    <div class="text-center text-sm text-gray-500">
+                        <p>祝您好运！</p>
+                        <p class="mt-2">🎊 恭喜发财 🎊</p>
+                    </div>
                 </div>
+            </div>
+        </div>
+        
+        <div class="overlay" id="overlay">
+            <div class="result-modal">
+                <div class="firecracker">🧨</div>
+                <div class="firecracker firecracker-right">🧨</div>
+                <div class="result-title">🎉 恭喜发财 🎉</div>
+                <div class="result-message">您抢到了</div>
+                <div class="result-amount" id="result-amount">￥0.00</div>
+                <div class="result-message" id="result-message">真是手气不错呢！</div>
+                <div class="result-clicks" id="result-clicks">点击次数: 0次</div>
+                <button class="retry-btn" id="retry-btn">再抢一次</button>
             </div>
         </div>
     </main>
@@ -485,491 +709,198 @@ body.dark-mode .option-btn.incorrect {
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 德国历史题目数据
-            const questions = [
-                {
-                    question: "普鲁士王国的第一位国王是谁？",
-                    options: ["腓特烈·威廉一世", "腓特烈一世", "腓特烈大帝", "腓特烈·威廉三世"],
-                    answer: 1
-                },
-                {
-                    question: "哪位普鲁士国王被称为'腓特烈大帝'？",
-                    options: ["腓特烈一世", "腓特烈·威廉一世", "腓特烈二世", "腓特烈三世"],
-                    answer: 2
-                },
-                {
-                    question: "普鲁士在哪个战争中崛起为欧洲大国？",
-                    options: ["三十年战争", "七年战争", "拿破仑战争", "普法战争"],
-                    answer: 1
-                },
-                {
-                    question: "德意志帝国成立于哪一年？",
-                    options: ["1867年", "1871年", "1875年", "1880年"],
-                    answer: 1
-                },
-                {
-                    question: "谁是德意志帝国的第一任宰相？",
-                    options: ["俾斯麦", "毛奇", "罗恩", "威廉一世"],
-                    answer: 0
-                },
-                {
-                    question: "第一次世界大战德国战败后签订了哪个条约？",
-                    options: ["凡尔赛条约", "布列斯特-立陶夫斯克条约", "圣日耳曼条约", "纳伊条约"],
-                    answer: 0
-                },
-                {
-                    question: "魏玛共和国成立于哪一年？",
-                    options: ["1918年", "1919年", "1920年", "1921年"],
-                    answer: 1
-                },
-                {
-                    question: "希特勒于哪一年成为德国总理？",
-                    options: ["1932年", "1933年", "1934年", "1935年"],
-                    answer: 1
-                },
-                {
-                    question: "纳粹党在德语中的全称是什么？",
-                    options: ["国家社会主义党", "德国工人党", "国家社会主义德国工人党", "民族社会主义党"],
-                    answer: 2
-                },
-                {
-                    question: "第二次世界大战欧洲战场以德国投降告终是在哪一年？",
-                    options: ["1944年", "1945年", "1946年", "1947年"],
-                    answer: 1
-                },
-                {
-                    question: "柏林墙是在哪一年开始建造的？",
-                    options: ["1959年", "1961年", "1963年", "1965年"],
-                    answer: 1
-                },
-                {
-                    question: "东西德统一是在哪一年？",
-                    options: ["1989年", "1990年", "1991年", "1992年"],
-                    answer: 1
-                },
-                {
-                    question: "德国统一后的首都是哪里？",
-                    options: ["汉堡", "慕尼黑", "柏林", "法兰克福"],
-                    answer: 2
-                },
-                {
-                    question: "德国的《基本法》（宪法）是在哪一年制定的？",
-                    options: ["1948年", "1949年", "1950年", "1951年"],
-                    answer: 1
-                },
-                {
-                    question: "普鲁士王国的首都最初是哪里？",
-                    options: ["柏林", "波茨坦", "柯尼斯堡", "德累斯顿"],
-                    answer: 0
-                },
-                {
-                    question: "德意志帝国的皇帝被称为？",
-                    options: ["凯撒", "沙皇", "德皇", "皇帝"],
-                    answer: 0
-                },
-                {
-                    question: "哪位普鲁士首相被称为'铁血宰相'？",
-                    options: ["俾斯麦", "腓特烈大帝", "威廉一世", "威廉二世"],
-                    answer: 0
-                },
-                {
-                    question: "第一次世界大战爆发的直接导火索是什么事件？",
-                    options: ["萨拉热窝事件", "七月危机", "奥匈帝国对塞尔维亚宣战", "德国对俄国宣战"],
-                    answer: 0
-                },
-                {
-                    question: "魏玛共和国得名于？",
-                    options: ["一个政治党派", "制宪会议召开的地点", "宪法签署的日期", "一位政治家的名字"],
-                    answer: 1
-                },
-                {
-                    question: "希特勒在啤酒馆政变失败后被监禁期间写了哪本书？",
-                    options: ["《我的奋斗》", "《德意志民族》", "《国家社会主义》", "《德国复兴》"],
-                    answer: 0
-                },
-                {
-                    question: "第二次世界大战中德国入侵苏联的行动代号是什么？",
-                    options: ["巴巴罗萨计划", "海狮计划", "闪电计划", "台风计划"],
-                    answer: 0
-                },
-                {
-                    question: "冷战时期，德国分裂为哪两个国家？",
-                    options: ["东德和西德", "联邦德国和民主德国", "德意志联邦共和国和德意志民主共和国", "以上都是"],
-                    answer: 3
-                },
-                {
-                    question: "柏林墙倒塌发生在哪一年？",
-                    options: ["1988年", "1989年", "1990年", "1991年"],
-                    answer: 1
-                },
-                {
-                    question: "德国联邦总理的官邸位于哪里？",
-                    options: ["柏林", "波恩", "慕尼黑", "汉堡"],
-                    answer: 0
-                },
-                {
-                    question: "德国统一后，原东德地区被称为？",
-                    options: ["新联邦州", "东部地区", "前民主德国", "东德州"],
-                    answer: 0
-                }
-            ,
-                {
-                    question: "德意志联邦共和国采用的政治制度是什么？",
-                    options: ["总统制", "议会制", "君主立宪制", "半总统制"],
-                    answer: 1
-                },
-                {
-                    question: "德国最重要的河流是哪条？",
-                    options: ["易北河", "多瑙河", "莱茵河", "美因河"],
-                    answer: 2
-                },
-                {
-                    question: "德国最大的城市是哪个？",
-                    options: ["柏林", "汉堡", "慕尼黑", "科隆"],
-                    answer: 0
-                },
-                {
-                    question: "德国工业革命时期最重要的地区是哪里？",
-                    options: ["巴伐利亚", "萨克森", "鲁尔区", "巴登-符腾堡"],
-                    answer: 2
-                },
-                {
-                    question: "神圣罗马帝国的皇帝通常由哪个王朝担任？",
-                    options: ["霍亨索伦王朝", "哈布斯堡王朝", "韦廷王朝", "维特尔斯巴赫王朝"],
-                    answer: 1
-                },
-                {
-                    question: "德国十一月革命发生在哪一年？",
-                    options: ["1917年", "1918年", "1919年", "1920年"],
-                    answer: 1
-                },
-                {
-                    question: "《九十五条论纲》是由谁发布的？",
-                    options: ["马丁·路德", "约翰·加尔文", "乌尔里希·茨温利", "菲利普·梅兰希通"],
-                    answer: 0
-                },
-                {
-                    question: "德意志关税同盟（Zollverein）建立于哪一年？",
-                    options: ["1818年", "1834年", "1848年", "1871年"],
-                    answer: 1
-                },
-                {
-                    question: "德国社会民主党（SPD）成立于哪一年？",
-                    options: ["1863年", "1875年", "1889年", "1890年"],
-                    answer: 0
-                },
-                {
-                    question: "魏玛共和国时期的货币危机是指什么？",
-                    options: ["马克贬值", "恶性通胀", "货币改革", "金本位制崩溃"],
-                    answer: 1
-                }
-            ];
+            const grabBtn = document.getElementById('grab-btn');
+            const redPacket = document.getElementById('red-packet');
+            const timeLeftSpan = document.getElementById('time-left');
+            const overlay = document.getElementById('overlay');
+            const resultAmount = document.getElementById('result-amount');
+            const resultMessage = document.getElementById('result-message');
+            const resultClicks = document.getElementById('result-clicks');
+            const retryBtn = document.getElementById('retry-btn');
+            const startBtn = document.getElementById('start-btn');
+            const gameStatus = document.getElementById('game-status');
             
-            // 游戏常量
-            const MAX_LIVES = 3;
+            let clickCount = 0;
+            let timeLeft = 15;
+            let gameActive = false;
+            let timer;
             
-            // 游戏状态
-            let score = 0;
-            let lives = MAX_LIVES;
-            let gameActive = false; // 初始状态设置为未开始
-            let currentQuestionIndex = 0;
-            let currentQuestion = null;
-            let answered = false;
-            let answeredCorrectly = false;
-            let questionsUsed = [];         // 已使用题目索引
-            let selectedQuestions = [];     // 本次游戏的25道题目索引
-            let currentQuestionIndexInSet = 0; // 当前题目在25题集合中的位置
-            let totalQuestionsAnswered = 0; // 总答题数
-            let correctAnswers = 0;         // 正确答案数
-            let gameLoop;                   // 游戏循环（保留以避免错误，但不再使用）
-            
-            // 从所有题目中随机选择指定数量的不重复题目
-            function getRandomQuestions(count) {
-                const allIndices = Array.from({length: questions.length}, (_, i) => i);
-                // 打乱数组顺序
-                for (let i = allIndices.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [allIndices[i], allIndices[j]] = [allIndices[j], allIndices[i]];
+            // 创建彩带效果
+            function createConfetti() {
+                const colors = ['#e74c3c', '#f39c12', '#e67e22', '#2ecc71', '#3498db', '#9b59b6'];
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    confetti.style.opacity = Math.random() * 0.5 + 0.5;
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
                 }
-                // 返回指定数量的题目索引
-                return allIndices.slice(0, Math.min(count, questions.length));
             }
             
-            // DOM元素
-            const gameContainer = document.querySelector('.game-container');
-            const actionButton = document.getElementById('action-btn');
-            const startButton = document.getElementById('start-btn');
-            const restartButton = document.getElementById('restart-btn');
-            const playAgainButton = document.getElementById('play-again-btn');
-            const scoreElement = document.getElementById('score');
-            const gameStatusElement = document.getElementById('game-status');
-            const livesContainer = document.getElementById('lives-container');
-            const gameOverOverlay = document.getElementById('game-over-overlay');
-            const finalScoreElement = document.getElementById('final-score');
-            const questionElement = document.getElementById('question');
-            const optionsContainer = document.getElementById('options');
+            // 根据概率计算金额
+            function calculateAmountWithProbability(clicks) {
+                const probability = Math.random(); // 0-1之间的随机数
+                
+                if (probability < 0.4) { // 40% 概率获得100以下金额
+                    // 10-99之间的金额
+                    return (Math.random() * 89 + 10).toFixed(2);
+                } else if (probability < 0.6) { // 20% 概率获得500以上金额 (0.4+0.2)
+                    // 500-999之间的金额
+                    return (Math.random() * 499 + 500).toFixed(2);
+                } else if (probability < 0.65) { // 5% 概率获得900以上金额 (0.6+0.05)
+                    // 900-1000之间的金额
+                    return (Math.random() * 100 + 900).toFixed(2);
+                } else { // 35% 概率获得100-500之间的金额 (0.65+0.35)
+                    // 100-499之间的金额
+                    return (Math.random() * 399 + 100).toFixed(2);
+                }
+            }
             
             // 开始游戏
             function startGame() {
-                // 重置游戏状态
-                score = 0;
-                lives = MAX_LIVES;
+                clickCount = 0;
+                timeLeft = 15;
                 gameActive = true;
-                questionsUsed = [];
-                selectedQuestions = [];       // 重新选择本次游戏的题目
-                currentQuestionIndexInSet = 0; // 重置当前题目索引
-                answered = false;
-                answeredCorrectly = false;
                 
-                // 随机选择25道不重复的题目
-                selectedQuestions = getRandomQuestions(25);
+                timeLeftSpan.textContent = timeLeft;
+                gameStatus.textContent = '游戏进行中...';
                 
-                // 更新UI
-                updateScore();
-                updateLives();
-                gameStatusElement.textContent = `当前分数: ${score} | 第${currentQuestionIndexInSet + 1}/25题`;
-                actionButton.disabled = true;
-                startButton.disabled = true;
+                grabBtn.disabled = false;
+                grabBtn.innerHTML = '抢红包';
+                grabBtn.style.background = 'linear-gradient(135deg, #f39c12, #e74c3c, #c0392b)';
+                startBtn.disabled = true;
                 
-                // 隐藏游戏结束遮罩
-                gameOverOverlay.classList.remove('active');
-                
-                // 重置统计信息显示
-                updateStats();
-                
-                // 显示第一题
-                showNextQuestion();
-            }
-            
-            // 重新开始（重置后默认暂停）
-            function resetGame() {
-                // 停止游戏
-                gameActive = false;
-                
-                // 重置游戏状态
-                score = 0;
-                lives = MAX_LIVES;
-                questionsUsed = [];
-                selectedQuestions = [];
-                currentQuestionIndexInSet = 0;
-                answered = false;
-                answeredCorrectly = false;
-                totalQuestionsAnswered = 0;
-                correctAnswers = 0;
-                
-                // 更新UI为暂停状态
-                updateScore();
-                updateLives();
-                gameStatusElement.textContent = `点击开始游戏`;
-                actionButton.disabled = true;
-                startButton.disabled = false;
-                
-                // 清空问题显示区域
-                const questionElement = document.getElementById('question');
-                const optionsContainer = document.getElementById('options');
-                questionElement.textContent = '点击开始游戏以开始答题';
-                optionsContainer.innerHTML = '';
-                
-                // 隐藏游戏结束遮罩
-                gameOverOverlay.classList.remove('active');
-                
-                // 重置统计信息显示
-                updateStats();
-            }
-            
-            // 显示下一题
-            function showNextQuestion() {
-                if (!gameActive) return;
-                
-                // 检查是否已经回答了25道题
-                if (currentQuestionIndexInSet >= selectedQuestions.length) {
-                    // 所有25道题都已完成，结束游戏
-                    endGame();
-                    return;
-                }
-                
-                // 获取当前要显示的题目索引
-                const questionIndex = selectedQuestions[currentQuestionIndexInSet];
-                
-                currentQuestion = questions[questionIndex];
-                currentQuestionIndex = questionIndex;
-                
-                // 显示问题和选项
-                displayQuestion(currentQuestion);
-                
-                // 更新状态显示
-                gameStatusElement.textContent = `当前分数: ${score} | 第${currentQuestionIndexInSet + 1}/25题`;
-            }
-            
-            // 显示问题和选项
-            function displayQuestion(questionObj) {
-                const questionElement = document.getElementById('question');
-                const optionsContainer = document.getElementById('options');
-                
-                questionElement.textContent = questionObj.question;
-                
-                // 清空选项容器
-                optionsContainer.innerHTML = '';
-                
-                // 创建选项按钮
-                questionObj.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'w-full bg-gray-100 hover:bg-gray-200 text-left p-3 rounded-lg transition-colors duration-200 option-btn border border-transparent';
-                    button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
-                    button.onclick = () => selectOption(index);
-                    optionsContainer.appendChild(button);
-                });
-                
-                answered = false;
-            }
-            
-            // 选择选项
-            function selectOption(selectedIndex) {
-                if (answered || !gameActive) return;
-                
-                answered = true;
-                
-                const optionsContainer = document.getElementById('options');
-                const optionButtons = optionsContainer.querySelectorAll('.option-btn');
-                
-                // 检查答案是否正确
-                const isCorrect = selectedIndex === currentQuestion.answer;
-                
-                // 高亮选中的选项
-                optionButtons[selectedIndex].classList.remove('bg-gray-100', 'hover:bg-gray-200');
-                if (isCorrect) {
-                    optionButtons[selectedIndex].classList.add('bg-green-500', 'text-white');
-                } else {
-                    optionButtons[selectedIndex].classList.add('bg-red-500', 'text-white');
-                }
-                
-                // 高亮正确答案
-                if (!isCorrect) {
-                    optionButtons[currentQuestion.answer].classList.remove('bg-gray-100', 'hover:bg-gray-200');
-                    optionButtons[currentQuestion.answer].classList.add('bg-green-500', 'text-white');
-                }
-                
-                // 记录答题统计
-                totalQuestionsAnswered++;
-                if (isCorrect) {
-                    // 答对了加分
-                    score += 10;
-                    updateScore();
-                    gameStatusElement.textContent = `正确! +10分`;
-                    answeredCorrectly = true;
-                    correctAnswers++;
-                } else {
-                    // 答错了扣生命值
-                    loseLife();
-                    gameStatusElement.textContent = `错误! 正确答案是: ${currentQuestion.options[currentQuestion.answer]}`;
-                    answeredCorrectly = false;
-                }
-                
-                // 实时更新统计信息
-                updateStats();
-                
-                // 增加当前题目索引，准备下一题
-                currentQuestionIndexInSet++;
-                
-                // 短暂延迟后显示下一题
-                setTimeout(() => {
-                    if (gameActive) {
-                        showNextQuestion();
+                // 开始倒计时
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timeLeftSpan.textContent = timeLeft;
+                    
+                    // 最后5秒变红色闪烁
+                    if (timeLeft <= 5) {
+                        timeLeftSpan.parentElement.style.color = '#ff0000';
+                        timeLeftSpan.parentElement.style.textShadow = '0 0 10px rgba(255,0,0,0.8)';
+                        timeLeftSpan.parentElement.style.animation = 'pulseRed 0.5s infinite';
+                        
+                        // 定义脉冲红动画
+                        const style = document.createElement('style');
+                        style.id = 'pulseRedStyle';
+                        style.innerHTML = `
+                            @keyframes pulseRed {
+                                0% { transform: scale(1); }
+                                50% { transform: scale(1.05); }
+                                100% { transform: scale(1); }
+                            }
+                        `;
+                        document.head.appendChild(style);
                     }
-                }, 1500);
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
             }
             
-            // 扣除生命值
-            function loseLife() {
-                lives--;
-                updateLives();
-                
-                if (lives <= 0) {
-                    endGame();
-                }
-            }
-            
-            // 更新生命值显示
-            function updateLives() {
-                livesContainer.innerHTML = '';
-                for (let i = 0; i < lives; i++) {
-                    const heart = document.createElement('i');
-                    heart.className = 'fa fa-heart life-icon';
-                    livesContainer.appendChild(heart);
-                }
-                // 显示已失去的生命
-                for (let i = lives; i < MAX_LIVES; i++) {
-                    const heart = document.createElement('i');
-                    heart.className = 'fa fa-heart-o life-icon';
-                    livesContainer.appendChild(heart);
-                }
-            }
-            
-            // 更新分数
-            function updateScore() {
-                scoreElement.textContent = score;
-                gameStatusElement.textContent = `当前分数: ${score}`;
-            }
-            
-            // 更新统计信息显示
-            const TOTAL_QUESTIONS = 25; // 总题数
-            
-            function updateStats() {
-                // 计算准确率基于总题数
-                const accuracyRate = TOTAL_QUESTIONS > 0 ? Math.round((correctAnswers / TOTAL_QUESTIONS) * 100) : 0;
-                
-                // 更新统计数据显示 - 显示当前答对数量/总题数25
-                document.getElementById('correct-answers').textContent = correctAnswers;
-                document.getElementById('total-questions').textContent = TOTAL_QUESTIONS; // 固定显示为25
-                document.getElementById('accuracy-rate').textContent = accuracyRate;
-            }
-            
-            // 确保在游戏结束时也调用一次更新统计的函数
+            // 结束游戏
             function endGame() {
                 gameActive = false;
+                clearInterval(timer);
                 
-                // 显示最终得分和统计信息
-                finalScoreElement.textContent = score;
+                grabBtn.disabled = true;
+                grabBtn.innerHTML = '⏰ 时间到! ⏰';
+                grabBtn.style.background = 'linear-gradient(135deg, #bdc3c7, #7f8c8d)';
+                startBtn.disabled = false;
+                gameStatus.textContent = '游戏结束';
                 
-                // 使用统一的统计更新函数
-                updateStats();
+                // 计算最终金额
+                const finalAmount = calculateAmountWithProbability(clickCount);
                 
-                // 根据游戏结束原因显示不同信息
-                if (lives <= 0) {
-                    gameStatusElement.textContent = `游戏结束！生命耗尽`;
-                } else if (currentQuestionIndexInSet >= 25) {
-                    gameStatusElement.textContent = `恭喜完成全部25道题目！`;
-                }
+                // 显示结果
+                resultAmount.textContent = `￥${finalAmount}`;
                 
-                // 显示游戏结束遮罩
-                gameOverOverlay.classList.add('active');
-                
-                // 启用开始按钮（允许重新开始）
-                startButton.disabled = false;
-            }
-            
-            // 事件监听
-            startButton.addEventListener('click', startGame);
-            restartButton.addEventListener('click', resetGame);
-            playAgainButton.addEventListener('click', resetGame);
-            
-            // 确保暗色模式下游戏元素样式正确
-            function applyDarkModeStyles() {
-                const isDarkMode = document.body.classList.contains('dark-mode');
-                
-                // 更新游戏容器背景色
-                if (isDarkMode) {
-                    gameContainer.style.backgroundColor = '#333';
+                // 根据金额显示不同消息
+                if (parseFloat(finalAmount) < 100) {
+                    resultMessage.textContent = '哎呀，没事没事，再接再厉！';
+                    resultMessage.className = 'result-message-low';
                 } else {
-                    gameContainer.style.backgroundColor = '#f0f0f0';
+                    resultMessage.textContent = '真是手气不错呢！';
+                    resultMessage.className = 'result-message';
                 }
+                
+                resultClicks.textContent = `点击次数: ${clickCount}次`;
+                
+                // 创建庆祝效果
+                createConfetti();
+                
+                // 显示遮罩和结果弹窗
+                setTimeout(() => {
+                    overlay.style.display = 'flex';
+                }, 500);
             }
             
-            // 初始化暗色模式样式
-            applyDarkModeStyles();
+            // 抢红包按钮点击事件
+            grabBtn.addEventListener('click', () => {
+                if (!gameActive) return;
+                
+                clickCount++;
+                
+                // 添加点击动画效果
+                grabBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    grabBtn.style.transform = 'scale(1)';
+                }, 100);
+            });
             
-            // 监听暗色模式切换
-            document.getElementById('theme-toggle').addEventListener('click', applyDarkModeStyles);
+            // 红包点击事件（额外的点击方式）
+            redPacket.addEventListener('click', () => {
+                if (!gameActive) return;
+                
+                clickCount++;
+                
+                // 添加点击动画效果
+                redPacket.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    redPacket.style.transform = 'scale(1)';
+                }, 100);
+            });
+            
+            // 再抢一次按钮点击事件
+            retryBtn.addEventListener('click', () => {
+                overlay.style.display = 'none';
+                // 重置游戏状态
+                clickCount = 0;
+                timeLeft = 15;
+                gameActive = false;
+                clearInterval(timer);
+                
+                // 更新UI
+                timeLeftSpan.textContent = timeLeft;
+                timeLeftSpan.parentElement.style.color = '#fff';
+                timeLeftSpan.parentElement.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(255,215,0,0.5)';
+                timeLeftSpan.parentElement.style.animation = 'pulse 1s infinite';
+                
+                grabBtn.disabled = true;
+                grabBtn.innerHTML = '抢红包';
+                grabBtn.style.background = 'linear-gradient(135deg, #f39c12, #e74c3c, #c0392b)';
+                startBtn.disabled = false;
+                gameStatus.textContent = '点击开始游戏';
+            });
+            
+            // 开始游戏按钮点击事件
+            startBtn.addEventListener('click', startGame);
+            
+            // 初始化游戏
+            timeLeftSpan.textContent = timeLeft;
+            grabBtn.disabled = true;
+            grabBtn.innerHTML = '抢红包';
+            grabBtn.style.background = 'linear-gradient(135deg, #f39c12, #e74c3c, #c0392b)';
         });
         
         // 添加音乐切换功能
