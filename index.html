@@ -11,19 +11,19 @@
     <script>
         tailwind.config = {
             theme: {
-extend: {
-    colors: {
-        primary: '#165DFF',
-        secondary: '#FFD166',
-        neutral: '#F5F7FA',
-        board: '#E6C388',
-        black: '#000001',
-        white: '#FFFFFF',
-        nightBackground: '#121212',
-        nightBoard: '#332a1b',
-        nightText: '#e0e0e0',
-        nightBlock: '#364969'
-    }
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FFD166',
+                        neutral: '#F5F7FA',
+                        board: '#E6C388',
+                        black: '#000001',
+                        white: '#FFFFFF',
+                        nightBackground: '#121212',
+                        nightBoard: '#332a1b',
+                        nightText: '#e0e0e0',
+                        nightBlock: '#364969'
+                    }
                 }
             }
         }
@@ -47,12 +47,95 @@ body.dark-mode .border-b.border-gray-200 {
 }
 
 body.dark-mode .text-gray-600 {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 /* 调整游戏规则列表项颜色 */
 body.dark-mode .text-sm.text-gray-600.space-y-1 li {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* 优化夜间模式下的按钮和文字样式 */
+body.dark-mode .dark\:text-gray-300 {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .dark\:text-gray-200 {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* 优化夜间模式下的按钮背景 */
+body.dark-mode .bg-indigo-600 {
+    background-color: rgba(79, 70, 229, 0.8);
+}
+
+body.dark-mode .bg-indigo-600:hover {
+    background-color: rgba(67, 56, 202, 0.9);
+}
+
+/* 优化夜间模式下的第一套模块 */
+body.dark-mode .relative.mb-2 > span {
+    background-color: theme('colors.nightBlock');
+    color: white;
+}
+
+/* 夜间模式切换按钮样式 */
+.theme-toggle {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+    transition: all 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    overflow: hidden;
+}
+
+.theme-toggle.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.toggle-circle {
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.theme-toggle.active .toggle-circle {
+    transform: translateX(36px);
+}
+
+.icon {
+    position: absolute;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.sun {
+    color: #ffd60a;
+    opacity: 1;
+}
+
+.moon {
+    color: #f1fa8c;
+    opacity: 0;
+    transform: scale(0.7);
+}
+
+.theme-toggle.active .sun {
+    opacity: 0;
+    transform: scale(0.7);
+}
+
+.theme-toggle.active .moon {
+    opacity: 1;
+    transform: scale(1);
 }
 
 @layer utilities {
@@ -66,6 +149,11 @@ body.dark-mode .text-sm.text-gray-600.space-y-1 li {
     }
 }
 
+/* 基础深色模式样式 */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 body.dark-mode {
     background-color: theme('colors.nightBackground');
     color: theme('colors.nightText');
@@ -73,8 +161,13 @@ body.dark-mode {
 
 body.dark-mode .text-gray-600,
 body.dark-mode .text-gray-700,
-body.dark-mode .text-gray-800 {
+body.dark-mode .text-gray-800,
+body.dark-mode .text-gray-500 {
     color: theme('colors.nightText');
+}
+
+body.dark-mode .bg-white {
+    background-color: theme('colors.nightBlock') !important;
 }
 
 body.dark-mode .game-status-container,
@@ -99,6 +192,67 @@ body.dark-mode header {
 
 body.dark-mode .text-black {
     color: theme('colors.nightText');
+}
+
+/* 游戏选项样式 - 修复深色模式显示 */
+.option-item {
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body.dark-mode .option-item {
+    border-color: rgba(255, 255, 255, 0.2);
+    background-color: theme('colors.nightBlock');
+    color: theme('colors.nightText');
+}
+
+.option-item:hover {
+    border-color: #93c5fd;
+    background-color: #f0f9ff;
+}
+
+body.dark-mode .option-item:hover {
+    border-color: #3b82f6;
+    background-color: #253b5c;
+}
+
+.option-item.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    font-weight: 600;
+}
+
+body.dark-mode .option-item.selected {
+    border-color: #60a5fa;
+    background-color: #1e40af;
+}
+
+.option-item.correct {
+    border-color: #10b981;
+    background-color: #dcfce7;
+    color: #065f46;
+}
+
+body.dark-mode .option-item.correct {
+    border-color: #34d399;
+    background-color: #064e3b;
+    color: #a7f3d0;
+}
+
+.option-item.incorrect {
+    border-color: #ef4444;
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+body.dark-mode .option-item.incorrect {
+    border-color: #f87171;
+    background-color: #450a0a;
+    color: #fecaca;
 }
 
 .control-button {
@@ -199,8 +353,6 @@ body.dark-mode .control-button {
 body.dark-mode .control-button:hover {
     background-color: #ffc433;
 }
-
-
 
 /* 抢红包游戏样式 */
 .game-container {
@@ -514,6 +666,74 @@ body.dark-mode .game-container {
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
+
+/* 主按钮样式 - 圆形现代质感 */
+.music-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(34, 139, 230, 0.12);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.25s ease;
+  position: fixed;
+  bottom: 6rem;
+  right: 1.5rem;
+  z-index: 999;
+}
+
+/* 悬浮效果 */
+.music-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 8px 22px rgba(34, 139, 230, 0.2);
+}
+
+/* 横向滑动容器 */
+.music-btn .slide-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* 图标样式 */
+.music-btn .icon {
+  width: 68px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #228be6;
+  position: static;
+  transition: none;
+}
+
+/* 横向滑动核心 */
+.music-btn.active .slide-wrapper {
+  transform: translateX(-68px);
+}
+
+/* SVG 图标大小 */
+.music-btn .icon svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+/* 夜间模式下的音乐按钮 */
+body.dark-mode .music-btn {
+  background: #333;
+  box-shadow: 0 6px 18px rgba(34, 139, 230, 0.2);
+}
+
+body.dark-mode .music-btn .icon {
+  color: #60a5fa;
+}
 </style>
 </head>
 <body class="bg-neutral min-h-screen font-sans text-black">
@@ -530,39 +750,11 @@ body.dark-mode .game-container {
                 <i class="fa fa-gamepad text-secondary text-2xl"></i>
                 <h1 class="text-xl md:text-2xl font-bold tracking-tight">银月的游戏咖厅</h1>
             </div>
-            <button onclick="toggleMusic()" style="position:fixed; bottom:6rem; right:1.5rem; width:3rem; height:3rem; border-radius:50%; background:white; border:2px solid #3b82f6; cursor:pointer; z-index:999;">
-              <i id="musicIcon" class="fa fa-music" style="color:#3b82f6; font-size:1.2rem;"></i>
-            </button>
-            <button id="theme-toggle" class="fixed bottom-6 right-6 w-32 h-14 rounded-full border-2 border-yellow-400 shadow-lg overflow-hidden transition-all duration-300 ease-in-out z-50 cursor-pointer hover:scale-105 active:scale-95">
-                <div class="relative w-full h-full overflow-hidden">
-                    <div id="day-bg" class="absolute inset-0 bg-blue-100 transition-opacity duration-500 ease-in-out">
-                        <div class="absolute top-3 left-2 w-12 h-4 bg-white rounded-full"></div>
-                        <div class="absolute top-5 left-7 w-10 h-4 bg-white rounded-full"></div>
-                        <div class="absolute top-3 right-2 w-12 h-4 bg-white rounded-full"></div>
-                        <div class="absolute top-5 right-7 w-10 h-4 bg-white rounded-full"></div>
-                    </div>
-                    <div id="night-bg" class="absolute inset-0 bg-black opacity-0 transition-opacity duration-500 ease-in-out">
-                        <div class="absolute top-3 left-3 w-1 h-1 bg-yellow-300 rounded-full animate-pulse"></div>
-                        <div class="absolute top-6 left-8 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
-                        <div class="absolute top-4 left-12 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1s"></div>
-                        <div class="absolute bottom-3 left-5 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1.5s"></div>
-                        <div class="absolute bottom-5 left-10 w-1 h-1 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 2s"></div>
-                    </div>
-                    <div id="toggle-icon" class="absolute top-1 w-12 h-12 rounded-full transition-transform duration-700 ease-in-out transform">
-                        <div id="sun" class="absolute inset-0 w-full h-full bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50 transition-opacity duration-300 ease-in-out">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="absolute w-14 h-1.5 bg-yellow-400 rounded-full"></div>
-                                <div class="absolute w-1.5 h-14 bg-yellow-400 rounded-full"></div>
-                                <div class="absolute w-10 h-1.5 bg-yellow-400 rounded-full transform rotate-45"></div>
-                                <div class="absolute w-1.5 h-10 bg-yellow-400 rounded-full transform rotate-45"></div>
-                            </div>
-                        </div>
-                        <div id="moon" class="absolute inset-0 w-full h-full bg-gray-200 rounded-full shadow-lg opacity-0 transition-opacity duration-300 ease-in-out">
-                            <div class="absolute top-2 left-2 w-2 h-2 bg-gray-300 rounded-full"></div>
-                            <div class="absolute top-4 right-3 w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
-                            <div class="absolute bottom-3 left-3 w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
-                        </div>
-                    </div>
+            <!-- 现代风格的夜间模式切换按钮 -->
+            <button id="theme-toggle" class="theme-toggle fixed bottom-6 right-6 w-20 h-10 rounded-full border: none outline: none cursor-pointer z-50">
+                <div class="toggle-circle">
+                    <div class="icon sun">☀️</div>
+                    <div class="icon moon">🌙</div>
                 </div>
             </button>
         </div>
@@ -573,7 +765,7 @@ body.dark-mode .game-container {
         <div class="text-center mb-8">
             <p class="text-lg font-medium">开放时间</p>
             <p class="text-xs text-gray-600">Open Time</p>
-            <p class="text-sm">2026年2月15日 - 2026年2月23日</p>
+            <p class="text-sm">2026年3月28日 - 2026年7月20日</p>
         </div>
 
         <div class="max-w-md mx-auto mb-8 relative">
@@ -592,15 +784,15 @@ body.dark-mode .game-container {
             <div class="grid grid-cols-1 gap-3 text-sm">
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">绑定时间：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年2月15日</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年3月28日</span>
               </div>
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">绑定音乐：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">恭喜发财 - 刘德华</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">长征机主题曲 Loji's theme (Full Re.ver) - 乘风兔兔</span>
               </div>
               <div class="flex items-center">
                 <span class="w-28 text-gray-500 dark:text-gray-400">续播时间：</span>
-                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年2月15日~2026年2月23日</span>
+                <span class="text-gray-800 dark:text-gray-200 font-medium">2026年3月28日~2026年7月20日</span>
               </div>
             </div>
           </div>
@@ -608,79 +800,169 @@ body.dark-mode .game-container {
         </div>
 
         <div class="text-center mb-8">
-            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">春节小游戏·至金豪夺</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">拼手速抢红包，在此检验你的手速到底有多快吧！</p>
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">国产AI智趣答题游戏</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">测试你对国产大语言模型和AI软件的了解程度，8分钟内完成20道题目！</p>
         </div>
 
-        <div class="flex justify-between items-center mb-4 px-4 py-3 bg-white rounded-lg shadow-sm">
-            <div class="flex items-center">
-                <span id="game-status" class="font-medium">点击[开始游戏]，即可进入抢红包环节</span>
+        <div class="flex flex-col md:flex-row justify-center items-start space-y-6 md:space-y-0 md:space-x-6">
+            <!-- 游戏规则侧边栏 -->
+            <div class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+                <h3 class="text-lg font-semibold mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 text-center">游戏规则</h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    <li class="flex items-start">
+                        <i data-lucide="check-circle" class="text-green-500 mr-2 mt-1 flex-shrink-0" size="14"></i>
+                        <span>20道国产AI相关题目</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i data-lucide="check-circle" class="text-green-500 mr-2 mt-1 flex-shrink-0" size="14"></i>
+                        <span>每道题4个选项</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i data-lucide="check-circle" class="text-green-500 mr-2 mt-1 flex-shrink-0" size="14"></i>
+                        <span>答对得5分</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i data-lucide="check-circle" class="text-green-500 mr-2 mt-1 flex-shrink-0" size="14"></i>
+                        <span>8分钟答题时间</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i data-lucide="check-circle" class="text-green-500 mr-2 mt-1 flex-shrink-0" size="14"></i>
+                        <span>完成后显示得分</span>
+                    </li>
+                </ul>
             </div>
 
-            <div class="flex space-x-2">
-                <button id="start-btn" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center">
-                    <i class="fa fa-play mr-2"></i> 开始游戏
-                </button>
-                <button id="restart-btn" class="bg-secondary hover:bg-opacity-90 text-primary px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center">
-                    <i class="fa fa-refresh mr-2"></i> 重新开始
-                </button>
-            </div>
-        </div>
-
-        <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
-            <div class="game-container bg-white shadow-xl rounded-lg p-6">
-                <div class="timer">⏱️ <span id="time-left">15</span>s</div>
-                
-                <div class="red-packet" id="red-packet">
-                    <div class="packet-top"></div>
-                    <div class="packet-text">福</div>
+            <!-- 游戏主界面 -->
+            <div class="flex-1 max-w-2xl w-full bg-white dark:bg-nightBlock rounded-2xl shadow-xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
+                <div class="relative mb-2">
+                    <h1 class="text-3xl font-bold text-center">国产AI智趣答题游戏</h1>
+                    <span class="absolute right-0 top-0 bg-white text-indigo-600 px-3 py-1 rounded-full text-sm font-medium">第一套</span>
                 </div>
-                
-                <button class="grab-btn" id="grab-btn">抢红包</button>
+                <div class="flex items-center justify-center mt-2">
+                    <i data-lucide="clock" class="mr-2"></i>
+                    <span class="text-xl font-semibold">剩余时间: <span id="timeLeft">8:00</span></span>
+                </div>
             </div>
 
-            <div class="w-full md:w-64 bg-white rounded-lg shadow-lg p-4">
-                <h3 class="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">游戏信息</h3>
-                
-                <div class="mb-4">
-                    <h4 class="font-medium mb-2">游戏规则</h4>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• 点击开始按钮后，在15秒内尽可能多地点击红包</li>
-                        <li>• 时间结束后会显示您抢到的金额</li>
-                        <li>• 可以通过点击红包或按钮来增加点击次数</li>
-                        <li>• 游戏结束后可以选择再抢一次</li>
-                    </ul>
-                </div>
-                
-                <div class="mb-4">
-                    <h4 class="font-medium mb-2">概率说明</h4>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• 金额上限为1000元</li>
-                        <li>• 有20%可能抢到500元以上金额</li>
-                        <li>• 有5%的可能抢到900元以上金额</li>
-                        <li>• 剩下的35%就是抢到100以上500以下之间金额的可能</li>
-                    </ul>
-                </div>
-                
-                <div class="mt-6">
-                    <div class="text-center text-sm text-gray-500">
-                        <p>祝您好运！</p>
-                        <p class="mt-2">🎊 恭喜发财 🎊</p>
+            <!-- Game Content -->
+            <div class="p-8">
+                <div id="gameContent">
+                    <!-- Question -->
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-3 py-1 rounded-full text-sm font-medium">
+                                问题 <span id="currentQuestion">1</span>/<span id="totalQuestions">20</span>
+                            </span>
+                        </div>
+                        <h2 class="text-xl font-semibold mb-6 dark:text-white" id="questionText">加载中...</h2>
+
+                        <!-- Options -->
+                        <div class="space-y-3" id="optionsContainer">
+                            <!-- Options will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between">
+                        <button
+                            id="submitButton"
+                            disabled
+                            class="px-6 py-3 rounded-lg font-medium bg-gray-300 dark:bg-gray-700 cursor-not-allowed dark:text-gray-200"
+                        >
+                            提交答案
+                        </button>
+                        <button
+                            id="nextButton"
+                            disabled
+                            class="px-6 py-3 rounded-lg font-medium bg-gray-300 dark:bg-gray-700 cursor-not-allowed dark:text-gray-200"
+                        >
+                            下一题
+                        </button>
                     </div>
                 </div>
             </div>
+            </div>
         </div>
-        
-        <div class="overlay" id="overlay">
-            <div class="result-modal">
-                <div class="firecracker">🧨</div>
-                <div class="firecracker firecracker-right">🧨</div>
-                <div class="result-title">🎉 恭喜发财 🎉</div>
-                <div class="result-message">您抢到了</div>
-                <div class="result-amount" id="result-amount">￥0.00</div>
-                <div class="result-message" id="result-message">真是手气不错呢！</div>
-                <div class="result-clicks" id="result-clicks">点击次数: 0次</div>
-                <button class="retry-btn" id="retry-btn">再抢一次</button>
+
+        <!-- Time Up Modal -->
+        <div id="timeUpModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white dark:bg-nightBlock rounded-xl p-8 max-w-md w-full mx-4">
+                <div class="flex justify-center mb-6">
+                    <i data-lucide="alert-triangle" class="text-red-500" size="48"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-center mb-4 dark:text-white">时间到！</h2>
+                <p class="text-gray-600 dark:text-gray-300 text-center mb-6">8分钟答题时间已结束，请重新开始游戏。</p>
+                <button
+                    id="restartButton1"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center"
+                >
+                    <i data-lucide="refresh-cw" class="mr-2"></i>
+                    重新开始
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Modal -->
+        <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white dark:bg-nightBlock rounded-xl p-8 max-w-md w-full mx-4">
+                <div class="flex justify-center mb-6">
+                    <i data-lucide="check-circle" class="text-green-500" size="48"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-center mb-2 dark:text-white">答题完成！</h2>
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">正确题目数:</span>
+                        <span class="font-bold text-indigo-600 dark:text-indigo-400" id="correctCount">0/20</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">总评分:</span>
+                        <span class="font-bold text-indigo-600 dark:text-indigo-400" id="totalScore">0分 (不及格)</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-300">用时:</span>
+                        <span class="font-bold text-indigo-600 dark:text-indigo-400" id="timeUsed">0:00</span>
+                    </div>
+                </div>
+                <button
+                    id="restartButton2"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center"
+                >
+                    <i data-lucide="refresh-cw" class="mr-2"></i>
+                    重新开始
+                </button>
+            </div>
+        </div>
+
+        <!-- 初始遮罩页面 -->
+        <div id="startModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white dark:bg-nightBlock rounded-xl p-8 max-w-md w-full mx-4">
+                <div class="flex justify-center mb-6">
+                    <i data-lucide="brain" class="text-indigo-500" size="48"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-center mb-4 dark:text-white">国产AI智趣答题挑战</h2>
+                <p class="text-gray-600 dark:text-gray-300 text-center mb-6">
+                    准备好测试你对国产大语言模型和AI软件的了解程度了吗？
+                    <br>
+                    你将有8分钟时间完成20道题目，每道题目答对得5分。
+                </p>
+                <div class="flex space-x-4">
+                    <button
+                        id="startGameButton"
+                        class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center"
+                    >
+                        <i data-lucide="play" class="mr-2"></i>
+                        开始挑战
+                    </button>
+                    <button
+                        id="cancelGameButton"
+                        class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 font-medium py-3 px-4 rounded-lg flex items-center justify-center"
+                    >
+                        <i data-lucide="x" class="mr-2"></i>
+                        取消
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -707,255 +989,491 @@ body.dark-mode .game-container {
         </div>
     </footer>
 
+    <!-- 音乐播放器按钮 -->
+    <button class="music-btn" id="playerBtn">
+      <div class="slide-wrapper">
+        <!-- 播放图标 -->
+        <div class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </div>
+        <!-- 暂停图标 -->
+        <div class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+        </div>
+      </div>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const grabBtn = document.getElementById('grab-btn');
-            const redPacket = document.getElementById('red-packet');
-            const timeLeftSpan = document.getElementById('time-left');
-            const overlay = document.getElementById('overlay');
-            const resultAmount = document.getElementById('result-amount');
-            const resultMessage = document.getElementById('result-message');
-            const resultClicks = document.getElementById('result-clicks');
-            const retryBtn = document.getElementById('retry-btn');
-            const startBtn = document.getElementById('start-btn');
-            const gameStatus = document.getElementById('game-status');
-            
-            let clickCount = 0;
-            let timeLeft = 15;
-            let gameActive = false;
-            let timer;
-            
-            // 创建彩带效果
-            function createConfetti() {
-                const colors = ['#e74c3c', '#f39c12', '#e67e22', '#2ecc71', '#3498db', '#9b59b6'];
-                for (let i = 0; i < 50; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = Math.random() * 10 + 5 + 'px';
-                    confetti.style.height = Math.random() * 10 + 5 + 'px';
-                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
-                    confetti.style.opacity = Math.random() * 0.5 + 0.5;
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 5000);
-                }
+        // 初始化Lucide图标
+        lucide.createIcons();
+
+        // 国产大语言模型和软件相关题目（难度提升版）
+        const questions = [
+            {
+                id: 1,
+                question: "百度ERNIE Bot 4.0在以下哪个任务上表现最为突出？",
+                options: ["代码生成", "多模态理解", "数学推理", "长文本处理"],
+                answer: "多模态理解"
+            },
+            {
+                id: 2,
+                question: "阿里巴巴通义千问的核心技术架构不包括以下哪项？",
+                options: ["Transformer架构", "知识图谱融合", "强化学习", "量子计算"],
+                answer: "量子计算"
+            },
+            {
+                id: 3,
+                question: "讯飞星火大模型的特色功能是？",
+                options: ["语音识别与合成", "图像生成", "代码审计", "金融分析"],
+                answer: "语音识别与合成"
+            },
+            {
+                id: 4,
+                question: "字节跳动豆包大模型的训练数据规模约为？",
+                options: ["100TB", "1PB", "10PB", "100PB"],
+                answer: "10PB"
+            },
+            {
+                id: 5,
+                question: "华为MindSpore框架的主要特点是？",
+                options: ["仅支持GPU", "全场景AI计算", "开源闭源混合", "仅支持云端部署"],
+                answer: "全场景AI计算"
+            },
+            {
+                id: 6,
+                question: "文心一格的AI绘画技术基于以下哪种模型？",
+                options: ["Diffusion模型", "GAN模型", "VAE模型", "Transformer模型"],
+                answer: "Diffusion模型"
+            },
+            {
+                id: 7,
+                question: "智谱AI ChatGLM-3的参数量级是？",
+                options: ["10亿参数", "100亿参数", "1000亿参数", "1万亿参数"],
+                answer: "1000亿参数"
+            },
+            {
+                id: 8,
+                question: "以下哪个国产大语言模型支持100万+上下文窗口？",
+                options: ["ERNIE Bot", "通义千问", "讯飞星火", "DeepSeek-R1"],
+                answer: "DeepSeek-R1"
+            },
+            {
+                id: 9,
+                question: "华为昇腾910B芯片的AI计算能力达到了？",
+                options: ["100 TFLOPS", "500 TFLOPS", "1000 TFLOPS", "2000 TFLOPS"],
+                answer: "1000 TFLOPS"
+            },
+            {
+                id: 10,
+                question: "讯飞语音识别的准确率在嘈杂环境下能达到？",
+                options: ["80%", "90%", "95%", "99%"],
+                answer: "95%"
+            },
+            {
+                id: 11,
+                question: "百度PaddlePaddle的主要应用场景不包括？",
+                options: ["计算机视觉", "自然语言处理", "强化学习", "区块链技术"],
+                answer: "区块链技术"
+            },
+            {
+                id: 12,
+                question: "阿里云医疗AI在以下哪种疾病诊断上准确率最高？",
+                options: ["肺癌", "糖尿病", "阿尔茨海默病", "抑郁症"],
+                answer: "肺癌"
+            },
+            {
+                id: 13,
+                question: "优必选Walker X机器人的自由度达到了？",
+                options: ["20+", "30+", "40+", "50+"],
+                answer: "40+"
+            },
+            {
+                id: 14,
+                question: "好未来AI教育系统采用的主要技术是？",
+                options: ["知识图谱", "联邦学习", "迁移学习", "所有选项都正确"],
+                answer: "所有选项都正确"
+            },
+            {
+                id: 15,
+                question: "360安全卫士的AI检测引擎采用了哪种算法？",
+                options: ["深度学习", "规则引擎", "专家系统", "支持向量机"],
+                answer: "深度学习"
+            },
+            {
+                id: 16,
+                question: "百度翻译的神经网络翻译模型是基于？",
+                options: ["RNN", "CNN", "Transformer", "LSTM"],
+                answer: "Transformer"
+            },
+            {
+                id: 17,
+                question: "字节跳动推荐系统的核心算法是？",
+                options: ["协同过滤", "内容过滤", "深度学习", "强化学习"],
+                answer: "深度学习"
+            },
+            {
+                id: 18,
+                question: "蚂蚁金融AI的风险评估模型准确率达到了？",
+                options: ["85%", "92%", "98%", "99.9%"],
+                answer: "98%"
+            },
+            {
+                id: 19,
+                question: "百度Apollo自动驾驶系统的最高级别是？",
+                options: ["L2", "L3", "L4", "L5"],
+                answer: "L4"
+            },
+            {
+                id: 20,
+                question: "小米智能家居平台的设备连接数超过了？",
+                options: ["1亿", "3亿", "5亿", "10亿"],
+                answer: "5亿"
             }
-            
-            // 根据概率计算金额
-            function calculateAmountWithProbability(clicks) {
-                const probability = Math.random(); // 0-1之间的随机数
-                
-                if (probability < 0.4) { // 40% 概率获得100以下金额
-                    // 10-99之间的金额
-                    return (Math.random() * 89 + 10).toFixed(2);
-                } else if (probability < 0.6) { // 20% 概率获得500以上金额 (0.4+0.2)
-                    // 500-999之间的金额
-                    return (Math.random() * 499 + 500).toFixed(2);
-                } else if (probability < 0.65) { // 5% 概率获得900以上金额 (0.6+0.05)
-                    // 900-1000之间的金额
-                    return (Math.random() * 100 + 900).toFixed(2);
-                } else { // 35% 概率获得100-500之间的金额 (0.65+0.35)
-                    // 100-499之间的金额
-                    return (Math.random() * 399 + 100).toFixed(2);
-                }
-            }
-            
-            // 开始游戏
-            function startGame() {
-                clickCount = 0;
-                timeLeft = 15;
-                gameActive = true;
-                
-                timeLeftSpan.textContent = timeLeft;
-                gameStatus.textContent = '游戏进行中...';
-                
-                grabBtn.disabled = false;
-                grabBtn.innerHTML = '抢红包';
-                grabBtn.style.background = 'linear-gradient(135deg, #f39c12, #e74c3c, #c0392b)';
-                startBtn.disabled = true;
-                
-                // 开始倒计时
-                timer = setInterval(() => {
-                    timeLeft--;
-                    timeLeftSpan.textContent = timeLeft;
-                    
-                    // 最后5秒变红色闪烁
-                    if (timeLeft <= 5) {
-                        timeLeftSpan.parentElement.style.color = '#ff0000';
-                        timeLeftSpan.parentElement.style.textShadow = '0 0 10px rgba(255,0,0,0.8)';
-                        timeLeftSpan.parentElement.style.animation = 'pulseRed 0.5s infinite';
-                        
-                        // 定义脉冲红动画
-                        const style = document.createElement('style');
-                        style.id = 'pulseRedStyle';
-                        style.innerHTML = `
-                            @keyframes pulseRed {
-                                0% { transform: scale(1); }
-                                50% { transform: scale(1.05); }
-                                100% { transform: scale(1); }
-                            }
-                        `;
-                        document.head.appendChild(style);
-                    }
-                    
-                    if (timeLeft <= 0) {
-                        endGame();
-                    }
-                }, 1000);
-            }
-            
-            // 结束游戏
-            function endGame() {
-                gameActive = false;
-                clearInterval(timer);
-                
-                grabBtn.disabled = true;
-                grabBtn.innerHTML = '⏰ 时间到! ⏰';
-                grabBtn.style.background = 'linear-gradient(135deg, #bdc3c7, #7f8c8d)';
-                startBtn.disabled = false;
-                gameStatus.textContent = '游戏结束';
-                
-                // 计算最终金额
-                const finalAmount = calculateAmountWithProbability(clickCount);
-                
-                // 显示结果
-                resultAmount.textContent = `￥${finalAmount}`;
-                
-                // 根据金额显示不同消息
-                if (parseFloat(finalAmount) < 100) {
-                    resultMessage.textContent = '哎呀，没事没事，再接再厉！';
-                    resultMessage.className = 'result-message-low';
-                } else {
-                    resultMessage.textContent = '真是手气不错呢！';
-                    resultMessage.className = 'result-message';
-                }
-                
-                resultClicks.textContent = `点击次数: ${clickCount}次`;
-                
-                // 创建庆祝效果
-                createConfetti();
-                
-                // 显示遮罩和结果弹窗
-                setTimeout(() => {
-                    overlay.style.display = 'flex';
-                }, 500);
-            }
-            
-            // 抢红包按钮点击事件
-            grabBtn.addEventListener('click', () => {
-                if (!gameActive) return;
-                
-                clickCount++;
-                
-                // 添加点击动画效果
-                grabBtn.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    grabBtn.style.transform = 'scale(1)';
-                }, 100);
-            });
-            
-            // 红包点击事件（额外的点击方式）
-            redPacket.addEventListener('click', () => {
-                if (!gameActive) return;
-                
-                clickCount++;
-                
-                // 添加点击动画效果
-                redPacket.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    redPacket.style.transform = 'scale(1)';
-                }, 100);
-            });
-            
-            // 再抢一次按钮点击事件
-            retryBtn.addEventListener('click', () => {
-                overlay.style.display = 'none';
-                // 重置游戏状态
-                clickCount = 0;
-                timeLeft = 15;
-                gameActive = false;
-                clearInterval(timer);
-                
-                // 更新UI
-                timeLeftSpan.textContent = timeLeft;
-                timeLeftSpan.parentElement.style.color = '#fff';
-                timeLeftSpan.parentElement.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(255,215,0,0.5)';
-                timeLeftSpan.parentElement.style.animation = 'pulse 1s infinite';
-                
-                grabBtn.disabled = true;
-                grabBtn.innerHTML = '抢红包';
-                grabBtn.style.background = 'linear-gradient(135deg, #f39c12, #e74c3c, #c0392b)';
-                startBtn.disabled = false;
-                gameStatus.textContent = '点击开始游戏';
-            });
-            
-            // 开始游戏按钮点击事件
-            startBtn.addEventListener('click', startGame);
-            
-            // 初始化游戏
-            timeLeftSpan.textContent = timeLeft;
-            grabBtn.disabled = true;
-            grabBtn.innerHTML = '抢红包';
-            grabBtn.style.background = 'linear-gradient(135deg, #f39c12, #e74c3c, #c0392b)';
-        });
+        ];
+
+        // 游戏状态变量
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let selectedAnswer = null;
+        let isSubmitted = false;
+        let score = 0;
+        let timeLeft = 480; // 8 minutes in seconds
+        let isTimeUp = false;
+        let timerInterval = null;
+        let startTime = 0;
+        let endTime = 0;
+
+        // DOM元素
+        const timeLeftElement = document.getElementById('timeLeft');
+        const currentQuestionElement = document.getElementById('currentQuestion');
+        const totalQuestionsElement = document.getElementById('totalQuestions');
+        const questionTextElement = document.getElementById('questionText');
+        const optionsContainerElement = document.getElementById('optionsContainer');
+        const submitButton = document.getElementById('submitButton');
+        const nextButton = document.getElementById('nextButton');
+        const timeUpModal = document.getElementById('timeUpModal');
+        const resultModal = document.getElementById('resultModal');
+        const correctCountElement = document.getElementById('correctCount');
+        const totalScoreElement = document.getElementById('totalScore');
+        const timeUsedElement = document.getElementById('timeUsed');
+        const restartButton1 = document.getElementById('restartButton1');
+        const restartButton2 = document.getElementById('restartButton2');
+        const startModal = document.getElementById('startModal');
+        const startGameButton = document.getElementById('startGameButton');
+        const cancelGameButton = document.getElementById('cancelGameButton');
+        const themeToggle = document.getElementById('theme-toggle');
         
-        // 添加音乐切换功能
-        let audio = null;
-        function toggleMusic() {
-            // 添加音乐切换功能
-            // 如果音频对象不存在，创建它
-            if (!audio) {
-                audio = new Audio('银月的游戏咖厅.mp3');
-                audio.loop = true; // 设置音乐循环播放
+        // 深色模式切换功能
+        function initThemeToggle() {
+            // 检查本地存储的主题偏好
+            const isDarkMode = localStorage.getItem('darkMode') === 'true' || 
+                              (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('darkMode'));
+            
+            // 设置初始主题
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').classList.add('active');
             }
             
-            const musicIcon = document.getElementById('musicIcon');
-            if (musicIcon.classList.contains('fa-music')) {
-                musicIcon.classList.remove('fa-music');
-                musicIcon.classList.add('fa-pause');
-                // 播放音乐
-                audio.play().catch(error => {
-                    console.log('播放音乐时出错:', error);
-                });
-            } else {
-                musicIcon.classList.remove('fa-pause');
-                musicIcon.classList.add('fa-music');
-                // 暂停音乐
-                audio.pause();
-            }
+            // 绑定切换事件
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', isDark);
+                
+                // 更新切换按钮UI
+                document.getElementById('theme-toggle').classList.toggle('active');
+            });
         }
 
-        // 添加夜间模式切换功能
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            const body = document.body;
-            const dayBg = document.getElementById('day-bg');
-            const nightBg = document.getElementById('night-bg');
-            const sun = document.getElementById('sun');
-            const moon = document.getElementById('moon');
-            const toggleIcon = document.getElementById('toggle-icon');
-            
-            // 切换暗色模式类
-            body.classList.toggle('dark-mode');
-            
-            // 切换背景和图标
-            if (body.classList.contains('dark-mode')) {
-                dayBg.style.opacity = '0';
-                nightBg.style.opacity = '1';
-                sun.style.opacity = '0';
-                moon.style.opacity = '1';
-                toggleIcon.style.transform = 'translateX(78px)'; // 增加移动距离到30px，确保月亮完全移动到最右边
-            } else {
-                dayBg.style.opacity = '1';
-                nightBg.style.opacity = '0';
-                sun.style.opacity = '1';
-                moon.style.opacity = '0';
-                toggleIcon.style.transform = 'translateX(0)';
+        // 洗牌函数
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
             }
+            return newArray;
+        }
+
+        // 格式化时间
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // 获取评分等级
+        function getScoreRating(score) {
+            if (score >= 90) return '优秀';
+            if (score >= 75) return '良好';
+            if (score >= 60) return '及格';
+            return '不及格';
+        }
+
+        // 显示当前问题
+        function displayCurrentQuestion() {
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                endGame();
+                return;
+            }
+            
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            currentQuestionElement.textContent = currentQuestionIndex + 1;
+            questionTextElement.textContent = currentQuestion.question;
+            
+            // 清空选项容器
+            optionsContainerElement.innerHTML = '';
+            
+            // 生成选项
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option-item';
+                optionElement.dataset.option = option;
+                optionElement.textContent = option;
+                
+                // 绑定选项点击事件
+                optionElement.addEventListener('click', () => {
+                    if (isSubmitted) return;
+                    
+                    // 移除其他选项的选中状态
+                    document.querySelectorAll('.option-item').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    // 添加当前选项的选中状态
+                    optionElement.classList.add('selected');
+                    selectedAnswer = option;
+                    
+                    // 启用提交按钮
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('bg-gray-300', 'dark:bg-gray-700');
+                    submitButton.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+                });
+                
+                optionsContainerElement.appendChild(optionElement);
+            });
+            
+            // 重置状态
+            selectedAnswer = null;
+            isSubmitted = false;
+            submitButton.disabled = true;
+            nextButton.disabled = true;
+            
+            // 重置按钮样式
+            submitButton.classList.add('bg-gray-300', 'dark:bg-gray-700');
+            submitButton.classList.remove('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+            nextButton.classList.add('bg-gray-300', 'dark:bg-gray-700');
+            nextButton.classList.remove('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+        }
+
+        // 开始计时器
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timeLeft = 480;
+            timeLeftElement.textContent = formatTime(timeLeft);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeLeftElement.textContent = formatTime(timeLeft);
+                
+                // 最后30秒添加视觉提醒
+                if (timeLeft <= 30) {
+                    timeLeftElement.style.color = '#ef4444';
+                    timeLeftElement.style.animation = 'pulseRed 1s infinite';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        // 时间到处理
+        function timeUp() {
+            isTimeUp = true;
+            timeUpModal.classList.remove('hidden');
+            timeUpModal.style.display = 'flex';
+        }
+
+        // 提交答案
+        function submitAnswer() {
+            if (!selectedAnswer || isSubmitted) return;
+            
+            isSubmitted = true;
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            
+            // 禁用提交按钮
+            submitButton.disabled = true;
+            
+            // 标记正确/错误答案
+            document.querySelectorAll('.option-item').forEach(optionElement => {
+                const option = optionElement.dataset.option;
+                
+                if (option === currentQuestion.answer) {
+                    optionElement.classList.add('correct');
+                } else if (option === selectedAnswer && option !== currentQuestion.answer) {
+                    optionElement.classList.add('incorrect');
+                }
+                
+                // 禁用所有选项点击
+                optionElement.style.pointerEvents = 'none';
+            });
+            
+            // 检查答案是否正确
+            if (selectedAnswer === currentQuestion.answer) {
+                score += 5;
+            }
+            
+            // 启用下一题按钮
+            nextButton.disabled = false;
+            nextButton.classList.remove('bg-gray-300', 'dark:bg-gray-700');
+            nextButton.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+        }
+
+        // 下一题
+        function nextQuestion() {
+            currentQuestionIndex++;
+            displayCurrentQuestion();
+        }
+
+        // 结束游戏
+        function endGame() {
+            clearInterval(timerInterval);
+            endTime = Date.now();
+            
+            const correctCount = score / 5;
+            const timeUsed = Math.floor((endTime - startTime) / 1000);
+            const scoreRating = getScoreRating(score);
+            
+            correctCountElement.textContent = `${correctCount}/20`;
+            totalScoreElement.textContent = `${score}分 (${scoreRating})`;
+            timeUsedElement.textContent = formatTime(timeUsed);
+            
+            resultModal.classList.remove('hidden');
+            resultModal.style.display = 'flex';
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            clearInterval(timerInterval);
+            
+            // 重置游戏状态
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 480;
+            isTimeUp = false;
+            selectedAnswer = null;
+            isSubmitted = false;
+            
+            // 重新洗牌题目
+            shuffledQuestions = shuffleArray(questions);
+            
+            // 重置UI
+            timeLeftElement.textContent = formatTime(timeLeft);
+            timeLeftElement.style.color = '';
+            timeLeftElement.style.animation = '';
+            
+            // 隐藏模态框
+            timeUpModal.classList.add('hidden');
+            timeUpModal.style.display = 'none';
+            resultModal.classList.add('hidden');
+            resultModal.style.display = 'none';
+            
+            // 显示开始模态框
+            startModal.classList.remove('hidden');
+            startModal.style.display = 'flex';
+            
+            // 显示第一个问题
+            displayCurrentQuestion();
+        }
+
+        // 开始新游戏
+        function startGame() {
+            // 隐藏开始模态框
+            startModal.classList.add('hidden');
+            startModal.style.display = 'none';
+            
+            // 记录开始时间
+            startTime = Date.now();
+            
+            // 开始计时
+            startTimer();
+            
+            // 显示第一个问题
+            displayCurrentQuestion();
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 提交答案按钮
+            submitButton.addEventListener('click', submitAnswer);
+            
+            // 下一题按钮
+            nextButton.addEventListener('click', nextQuestion);
+            
+            // 重新开始按钮
+            restartButton1.addEventListener('click', restartGame);
+            restartButton2.addEventListener('click', restartGame);
+            
+            // 开始游戏按钮
+            startGameButton.addEventListener('click', startGame);
+            
+            // 取消游戏按钮
+            cancelGameButton.addEventListener('click', () => {
+                window.location.href = 'https://silvermoon-2025.github.io/historyloverweb/';
+            });
+        }
+
+        // 初始化音乐播放功能
+        document.addEventListener('DOMContentLoaded', () => {
+          const btn = document.getElementById('playerBtn');
+          if (btn) {
+            // 创建Audio对象
+            const audio = new Audio('银月的游戏咖厅.mp3');
+            
+            btn.addEventListener('click', () => {
+              btn.classList.toggle('active');
+              
+              if (audio.paused) {
+                // 播放音乐
+                audio.play().catch(error => {
+                  console.error('播放失败:', error);
+                });
+              } else {
+                // 暂停音乐
+                audio.pause();
+              }
+            });
+          }
         });
+
+        // 初始化游戏
+        function initGame() {
+            // 初始化主题切换
+            initThemeToggle();
+            
+            // 初始化题目
+            shuffledQuestions = shuffleArray(questions);
+            
+            // 绑定事件
+            bindEvents();
+            
+            // 显示第一个问题
+            displayCurrentQuestion();
+            
+            // 设置总题数
+            totalQuestionsElement.textContent = questions.length;
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
