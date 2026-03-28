@@ -1438,6 +1438,16 @@ body.dark-mode .music-btn .icon {
             // 创建Audio对象
             const audio = new Audio('银月的游戏咖厅.mp3');
             
+            // 监听音乐结束事件，实现带延迟的循环播放
+            audio.addEventListener('ended', () => {
+              // 2秒后重新播放
+              setTimeout(() => {
+                audio.play().catch(error => {
+                  console.error('播放失败:', error);
+                });
+              }, 2000);
+            });
+            
             btn.addEventListener('click', () => {
               btn.classList.toggle('active');
               
